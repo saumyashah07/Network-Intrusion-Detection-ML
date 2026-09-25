@@ -301,9 +301,9 @@
         </div>
 
         <div class="button-row">
-            <button onclick="makePrediction()">
-                Predict Network Traffic
-            </button>
+          <button id="predict-button" onclick="makePrediction()">
+    Predict Network Traffic
+</button>
 
             <button class="secondary-button" onclick="resetForm()">
                 Reset
@@ -372,15 +372,19 @@
 
     </div>
 
-    <div class="prediction-history">
+    <div class="history-header">
+    <h2>Prediction History</h2>
 
-        <div class="history-header">
-            <h2>Prediction History</h2>
+    <div class="button-row">
+        <button class="secondary-button" onclick="exportHistory()">
+            Export History
+        </button>
 
-            <button class="secondary-button" onclick="clearHistory()">
-                Clear History
-            </button>
-        </div>
+        <button class="secondary-button" onclick="clearHistory()">
+            Clear History
+        </button>
+    </div>
+</div>
 
         <div class="attack-distribution">
                 <h2>Attack Distribution</h2>
@@ -429,24 +433,50 @@
 
         async function makePrediction() {
 
+            const predictButton =
+    document.getElementById("predict-button");
+
+predictButton.disabled = true;
+predictButton.innerText = "Analyzing...";
+const serviceValue =
+    document.getElementById("service").value.trim();
+
+const flagValue =
+    document.getElementById("flag").value.trim();
+
+const srcBytes =
+    Number(document.getElementById("src_bytes").value);
+
+const dstBytes =
+    Number(document.getElementById("dst_bytes").value);
+
+if (!serviceValue || !flagValue) {
+    alert("Please enter both Service and Flag.");
+    predictButton.disabled = false;
+    predictButton.innerText = "Predict Network Traffic";
+    return;
+}
+
+if (srcBytes < 0 || dstBytes < 0) {
+    alert("Source Bytes and Destination Bytes cannot be negative.");
+    predictButton.disabled = false;
+    predictButton.innerText = "Predict Network Traffic";
+    return;
+}
             const sampleData = {
                 duration: 0,
 
                 protocol_type:
                     document.getElementById("protocol_type").value,
 
-                service:
-                    document.getElementById("service").value,
+                service: document.getElementById("service").value,
 
-                flag:
-                    document.getElementById("flag").value,
-
-                src_bytes:
-                    Number(document.getElementById("src_bytes").value),
-
-                dst_bytes:
-                    Number(document.getElementById("dst_bytes").value),
-
+                flag: document.getElementById("flag").value,
+                
+                src_bytes: Number(document.getElementById("src_bytes").value),
+                
+                dst_bytes: Number(document.getElementById("dst_bytes").value),
+                
                 land: 0,
                 wrong_fragment: 0,
                 urgent: 0,
@@ -765,10 +795,14 @@
                     "attack-result";
 
                 console.error(error);
+
             }
-        }
-
-
+finally {
+    predictButton.disabled = false;
+    predictButton.innerText = "Predict Network Traffic";
+}
+            }
+    
         function resetForm() {
 
             document.getElementById("protocol_type").value =
@@ -850,6 +884,8 @@
             localStorage.removeItem(
                 "nidsHistory"
             );
+            localStorage.removeItem("nidsAttackTypes");
+            loadAttackDistribution();
         }
 
 
@@ -967,6 +1003,42 @@
 
         distributionList.appendChild(item);
     });
+}
+
+function exportHistory() {
+    const savedHistory = JSON.parse(
+        localStorage.getItem("nidsHistory") || "[]"
+    );
+
+    if (savedHistory.length === 0) {
+        alert("No prediction history available.");
+        return;
+    }
+
+    const csvContent =
+        "Prediction History\n" +
+        savedHistory
+            .map(function (item) {
+                return '"' + item.replace(/"/g, '""') + '"';
+            })
+            .join("\n");
+
+    const blob = new Blob(
+        [csvContent],
+        { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "nids_prediction_history.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
 }
     </script>
 

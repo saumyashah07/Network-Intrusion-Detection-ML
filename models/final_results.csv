@@ -1,0 +1,4 @@
+Evaluation,Accuracy
+Training/Test Split,0.9984123834094066
+KDDTest+ Multiclass,0.7223651525904897
+KDDTest+ Binary,0.7558995741660752

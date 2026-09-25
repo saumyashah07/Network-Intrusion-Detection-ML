@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .normal-result {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-weight: bold;
+    white-space: pre-line;
+}
+
+.attack-result {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background: #ffebee;
+    color: #c62828;
+    font-weight: bold;
+    white-space: pre-line;
+
+    .subtitle {
+    color: #666;
+    font-size: 16px;
+    margin-top: -10px;
+    margin-bottom: 25px;
+
+    .project-status {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 15px;
+
+    .model-info {
+    margin-top: 15px;
+}
+
+.model-info h2 {
+    margin-bottom: 12px;
+
+    .model-cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.model-cards {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 15px !important;
+    width: 100%;
+}
+
+.model-card {
+    padding: 18px !important;
+    border-radius: 12px !important;
+    background: #f7f7f7 !important;
+    text-align: center !important;
+    box-sizing: border-box;
+}
+
+.model-card h3 {
+    margin: 0 0 8px 0 !important;
+}
+
+.model-card p {
+    margin: 0 !important;
+    font-size: 14px !important;
+
+    .disclaimer {
+    margin-top: 30px;
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+
+    footer {
+    margin-top: 20px;
+    padding: 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+}
+}
+}
+}
+}
+}
+}
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIDS Prediction</title>
+</head>
+
+<body>
+
+    <h1>AI-Based Network Intrusion Detection System</h1>
+    <p class="subtitle">
+    Machine learning-based detection and classification of network traffic.
+</p>
+<p class="project-status">
+    Random Forest • Decision Tree • KNN
+</p>
+
+    <p>Enter network traffic information to predict the attack type.</p>
+
+   <div>
+    <label>Protocol Type:</label>
+    <select id="protocol_type">
+        <option value="tcp">TCP</option>
+        <option value="udp">UDP</option>
+        <option value="icmp">ICMP</option>
+    </select>
+</div>
+
+<br>
+
+<div>
+    <label>Service:</label>
+    <input type="text" id="service" value="http">
+</div>
+
+<br>
+
+<div>
+    <label>Flag:</label>
+    <input type="text" id="flag" value="SF">
+</div>
+
+<br>
+
+<div>
+    <label>Source Bytes:</label>
+    <input type="number" id="src_bytes" value="181">
+</div>
+
+<br>
+
+<div>
+    <label>Destination Bytes:</label>
+    <input type="number" id="dst_bytes" value="5450">
+</div>
+
+<br>
+
+<button onclick="makePrediction()">Predict Network Traffic</button>
+<button onclick="resetForm()">Reset</button>
+<div class="model-info">
+    <h2>Model Information</h2>
+
+    <div class="model-cards">
+        <div class="model-cards" style="display: flex; flex-direction: row; gap: 15px; width: 100%;">
+
+    <div class="model-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>Random Forest</h3>
+        <p>Primary classification model</p>
+    </div>
+
+    <div class="model-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>Decision Tree</h3>
+        <p>Tree-based comparison model</p>
+    </div>
+
+    <div class="model-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>KNN</h3>
+        <p>Distance-based comparison model</p>
+    </div>
+
+</div>
+<div class="evaluation-summary">
+    <h2>Evaluation Summary</h2>
+
+    <div class="evaluation-cards" style="display: flex; flex-direction: row; gap: 15px; width: 100%;">
+
+    <div class="evaluation-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>Training/Test Accuracy</h3>
+        <p>99.84%</p>
+    </div>
+
+    <div class="evaluation-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>KDDTest+ Multiclass</h3>
+        <p>72.24%</p>
+    </div>
+
+    <div class="evaluation-card" style="flex: 1; padding: 18px; border-radius: 12px; background: #f7f7f7; text-align: center;">
+        <h3>KDDTest+ Binary</h3>
+        <p>75.59%</p>
+    </div>
+
+</div>
+    </div>
+</div>
+    </div>
+</div>
+    </div>
+</div>
+    <h2 id="result"></h2>
+
+    <script>
+    async function makePrediction() {
+
+        const sampleData = {
+    duration: 0,
+    protocol_type: document.getElementById("protocol_type").value,
+    service: document.getElementById("service").value,
+    flag: document.getElementById("flag").value,
+    src_bytes: Number(document.getElementById("src_bytes").value),
+    dst_bytes: Number(document.getElementById("dst_bytes").value),
+
+    land: 0,
+    wrong_fragment: 0,
+    urgent: 0,
+    hot: 0,
+    num_failed_logins: 0,
+    logged_in: 1,
+    num_compromised: 0,
+    root_shell: 0,
+    su_attempted: 0,
+    num_root: 0,
+    num_file_creations: 0,
+    num_shells: 0,
+    num_access_files: 0,
+    num_outbound_cmds: 0,
+    is_host_login: 0,
+    is_guest_login: 0,
+    count: 1,
+    srv_count: 1,
+    serror_rate: 0,
+    srv_serror_rate: 0,
+    rerror_rate: 0,
+    srv_rerror_rate: 0,
+    same_srv_rate: 1,
+    diff_srv_rate: 0,
+    srv_diff_host_rate: 0,
+    dst_host_count: 9,
+    dst_host_srv_count: 9,
+    dst_host_same_srv_rate: 1,
+    dst_host_diff_srv_rate: 0,
+    dst_host_same_src_port_rate: 0.11,
+    dst_host_srv_diff_host_rate: 0,
+    dst_host_serror_rate: 0,
+    dst_host_srv_serror_rate: 0,
+    dst_host_rerror_rate: 0,
+    dst_host_srv_rerror_rate: 0
+};
+
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(sampleData)
+        });
+
+        const result = await response.json();
+
+        const attackCategoryMap = {
+    back: "DoS",
+    land: "DoS",
+    neptune: "DoS",
+    pod: "DoS",
+    smurf: "DoS",
+    teardrop: "DoS",
+    ipsweep: "Probe",
+    nmap: "Probe",
+    portsweep: "Probe",
+    satan: "Probe",
+    ftp_write: "R2L",
+    guess_passwd: "R2L",
+    imap: "R2L",
+    multihop: "R2L",
+    phf: "R2L",
+    spy: "R2L",
+    warezclient: "R2L",
+    warezmaster: "R2L",
+    buffer_overflow: "U2R",
+    loadmodule: "U2R",
+    perl: "U2R",
+    rootkit: "U2R"
+};
+        const attackType = result.prediction;
+        const confidence = result.confidence;
+
+        const resultElement = document.getElementById("result");
+
+if (attackType === "normal") {
+    resultElement.innerText =
+        "✓ Normal Traffic\nConfidence: " + confidence + "%";
+    resultElement.className = "normal-result";
+} else {
+    const category = attackCategoryMap[attackType] || "Other";
+
+resultElement.innerText =
+    "⚠ Attack Detected\n" +
+    "Attack Type: " + attackType +
+    "\nCategory: " + category +
+    "\nConfidence: " + confidence + "%";
+    resultElement.className = "attack-result";
+}
+    }
+
+    function resetForm() {
+    document.getElementById("protocol_type").value = "tcp";
+    document.getElementById("service").value = "http";
+    document.getElementById("flag").value = "SF";
+    document.getElementById("src_bytes").value = 181;
+    document.getElementById("dst_bytes").value = 5450;
+
+    document.getElementById("result").innerText = "";
+}
+</script>
+
+<p class="disclaimer">
+    This system is developed for educational and demonstration purposes.
+    Predictions should not be treated as a substitute for professional network security analysis.
+</p>
+
+<footer>
+    <p>AI-Based Network Intrusion Detection System</p>
+</footer>
+
+</body>
+</html>

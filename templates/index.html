@@ -382,6 +382,14 @@
             </button>
         </div>
 
+        <div class="attack-distribution">
+                <h2>Attack Distribution</h2>
+
+             <div id="attack-distribution-list">
+        <p>No attacks detected yet.</p>
+    </div>
+</div>
+
         <div class="prediction-stats">
 
             <div class="stat-card">
@@ -727,6 +735,22 @@
                     JSON.stringify(savedHistory)
                 );
 
+                loadAttackDistribution();
+                
+                if (attackType !== "normal") {
+
+    let attackTypes = JSON.parse(
+        localStorage.getItem("nidsAttackTypes") || "{}"
+    );
+
+    attackTypes[attackType] =
+        (attackTypes[attackType] || 0) + 1;
+
+    localStorage.setItem(
+        "nidsAttackTypes",
+        JSON.stringify(attackTypes)
+    );
+}
 
             } catch (error) {
 
@@ -900,11 +924,50 @@
         }
 
 
-        window.addEventListener(
-            "load",
-            loadSavedData
-        );
+       window.addEventListener("load", function () {
+    loadSavedData();
+    loadAttackDistribution();
+});
 
+        function loadAttackDistribution() {
+    const distributionList =
+        document.getElementById("attack-distribution-list");
+
+    const attackTypes = JSON.parse(
+        localStorage.getItem("nidsAttackTypes") || "{}"
+    );
+
+    const entries = Object.entries(attackTypes);
+
+    if (entries.length === 0) {
+        distributionList.innerHTML =
+            "<p>No attacks detected yet.</p>";
+        return;
+    }
+
+    distributionList.innerHTML = "";
+
+    entries.sort(function (a, b) {
+        return b[1] - a[1];
+    });
+
+    entries.forEach(function (entry) {
+        const attackType = entry[0];
+        const count = entry[1];
+
+        const item = document.createElement("div");
+
+        item.style.padding = "10px";
+        item.style.marginBottom = "8px";
+        item.style.background = "#f4f4f4";
+        item.style.borderRadius = "8px";
+
+        item.innerText =
+            attackType + " — " + count + " detection(s)";
+
+        distributionList.appendChild(item);
+    });
+}
     </script>
 
 </body>

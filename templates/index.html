@@ -82,6 +82,23 @@
     text-align: center;
     font-size: 13px;
     color: #888;
+
+    .prediction-history {
+    margin-top: 25px;
+}
+
+#history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#history-list div {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #f7f7f7;
+    font-size: 14px;
+} 
 }
 }
 }
@@ -199,6 +216,7 @@
 </div>
     <h2 id="result"></h2>
 
+
     <script>
     async function makePrediction() {
 
@@ -282,13 +300,66 @@
     rootkit: "U2R"
 };
         const attackType = result.prediction;
+        const category = result.category;
         const confidence = result.confidence;
+const historyList = document.getElementById("history-list");
 
+if (historyList.innerText === "No predictions yet.") {
+    historyList.innerHTML = "";
+}
+
+const historyItem = document.createElement("div");
+
+const time = new Date().toLocaleTimeString();
+
+historyItem.innerText =
+    attackType === "normal"
+        ? "✓ Normal Traffic | Confidence: " + confidence + "% | " + time
+        : "⚠ " + attackType + " | Category: " + category + " | Confidence: " + confidence + "% | " + time;
+
+historyList.prepend(historyItem);
+let savedHistory = JSON.parse(localStorage.getItem("nidsHistory") || "[]");
+
+savedHistory.unshift(historyItem.innerText);
+
+localStorage.setItem(
+    "nidsHistory",
+    JSON.stringify(savedHistory)
+);
         const resultElement = document.getElementById("result");
+
+        let total = Number(localStorage.getItem("nidsTotal") || 0);
+let normal = Number(localStorage.getItem("nidsNormal") || 0);
+let attacks = Number(localStorage.getItem("nidsAttack") || 0);
+
+total++;
+
+if (attackType === "normal") {
+    normal++;
+} else {
+    attacks++;
+}
+
+localStorage.setItem("nidsTotal", total);
+localStorage.setItem("nidsNormal", normal);
+localStorage.setItem("nidsAttack", attacks);
+
+document.getElementById("total-count").innerText = total;
+document.getElementById("normal-count").innerText = normal;
+document.getElementById("attack-count").innerText = attacks;
+totalCount.innerText = Number(totalCount.innerText) + 1;
+
+if (attackType === "normal") {
+    normalCount.innerText = Number(normalCount.innerText) + 1;
+} else {
+    attackCount.innerText = Number(attackCount.innerText) + 1;
+}
 
 if (attackType === "normal") {
     resultElement.innerText =
-        "✓ Normal Traffic\nConfidence: " + confidence + "%";
+        "✓ Normal Traffic\n" +
+        "Category: Normal\n" +
+        "Confidence: " + confidence + "%";
     resultElement.className = "normal-result";
 } else {
     const category = attackCategoryMap[attackType] || "Other";
@@ -299,6 +370,10 @@ resultElement.innerText =
     "\nCategory: " + category +
     "\nConfidence: " + confidence + "%";
     resultElement.className = "attack-result";
+    
+localStorage.setItem("nidsTotal", totalCount.innerText);
+localStorage.setItem("nidsNormal", normalCount.innerText);
+localStorage.setItem("nidsAttack", attackCount.innerText);
 }
     }
 
@@ -311,7 +386,71 @@ resultElement.innerText =
 
     document.getElementById("result").innerText = "";
 }
+function clearHistory() {
+    document.getElementById("history-list").innerHTML =
+        "<p>No predictions yet.</p>";
+
+    document.getElementById("total-count").innerText = "0";
+    document.getElementById("normal-count").innerText = "0";
+    document.getElementById("attack-count").innerText = "0";
+
+    localStorage.removeItem("nidsTotal");
+    localStorage.removeItem("nidsNormal");
+    localStorage.removeItem("nidsAttack");
+    localStorage.removeItem("nidsHistory");
+}
+
+window.onload = function () {
+    document.getElementById("total-count").innerText =
+        localStorage.getItem("nidsTotal") || "0";
+
+    document.getElementById("normal-count").innerText =
+        localStorage.getItem("nidsNormal") || "0";
+
+    document.getElementById("attack-count").innerText =
+        localStorage.getItem("nidsAttack") || "0";
+
+        const savedHistory = JSON.parse(
+    localStorage.getItem("nidsHistory") || "[]"
+);
+
+const historyList = document.getElementById("history-list");
+
+if (savedHistory.length > 0) {
+    historyList.innerHTML = "";
+
+    savedHistory.forEach(function (item) {
+        const historyItem = document.createElement("div");
+        historyItem.innerText = item;
+        historyList.appendChild(historyItem);
+    });
+}
+};
+
 </script>
+<button onclick="clearHistory()">Clear History</button>
+<div class="prediction-history">
+    <h2>Prediction History</h2>
+    <div class="prediction-stats">
+    <div>
+        <h3 id="total-count">0</h3>
+        <p>Total Predictions</p>
+    </div>
+
+    <div>
+        <h3 id="normal-count">0</h3>
+        <p>Normal Traffic</p>
+    </div>
+
+    <div>
+        <h3 id="attack-count">0</h3>
+        <p>Attacks Detected</p>
+    </div>
+</div>
+    <div id="history-list">
+        <p>No predictions yet.</p>
+    </div>
+</div>
 
 <p class="disclaimer">
     This system is developed for educational and demonstration purposes.
@@ -321,6 +460,7 @@ resultElement.innerText =
 <footer>
     <p>AI-Based Network Intrusion Detection System</p>
 </footer>
+
 
 </body>
 </html>

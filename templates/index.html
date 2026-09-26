@@ -88,6 +88,11 @@
             opacity: 0.9;
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .secondary-button {
             background: #e6e6e6;
             color: #222;
@@ -95,7 +100,8 @@
 
         .model-info,
         .evaluation-summary,
-        .prediction-history {
+        .prediction-history,
+        .attack-distribution {
             margin-top: 30px;
         }
 
@@ -163,6 +169,7 @@
         #confidence-wrapper {
             display: none;
             align-items: center;
+            justify-content: flex-start;
             gap: 10px;
             margin: 10px 0 20px;
         }
@@ -197,11 +204,32 @@
         }
 
         .history-header h2 {
-            margin-bottom: 0;
+            margin: 0;
+        }
+
+        .history-header .button-row {
+            margin-top: 0;
         }
 
         .prediction-stats {
             margin-top: 15px;
+        }
+
+        .history-search-wrapper {
+            width: 100%;
+            margin-top: 18px;
+            margin-bottom: 12px;
+        }
+
+        #history-search {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
         }
 
         .history-list {
@@ -216,6 +244,39 @@
             border-radius: 8px;
             background: #f4f4f4;
             font-size: 14px;
+        }
+
+        .no-results {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .distribution-row {
+            margin-bottom: 16px;
+        }
+
+        .distribution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .distribution-bar-container {
+            width: 100%;
+            height: 9px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .distribution-bar {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 10px;
+            transition: width 0.4s ease;
         }
 
         .disclaimer {
@@ -249,6 +310,56 @@
             #confidence-bar-container {
                 width: 170px;
             }
+
+            .history-header {
+                align-items: flex-start;
+            }
+
+            .detection-overview {
+    margin-top: 30px;
+}
+
+.overview-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: #f4f4f4;
+}
+
+.overview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+    font-size: 14px;
+}
+
+.overview-item strong {
+    font-size: 14px;
+}
+
+.overview-bar-container {
+    width: 100%;
+    height: 9px;
+    margin-bottom: 18px;
+    background: #e5e5e5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.overview-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.normal-bar {
+    background: #4caf50;
+}
+
+.attack-bar {
+    background: #c62828;
+}
         }
     </style>
 </head>
@@ -269,10 +380,14 @@
         Enter network traffic information to predict the attack type.
     </p>
 
+
+    <!-- INPUT SECTION -->
+
     <div class="input-section">
 
         <div class="input-group">
             <label for="protocol_type">Protocol Type:</label>
+
             <select id="protocol_type">
                 <option value="tcp">TCP</option>
                 <option value="udp">UDP</option>
@@ -280,47 +395,62 @@
             </select>
         </div>
 
+
         <div class="input-group">
             <label for="service">Service:</label>
             <input type="text" id="service" value="http">
         </div>
+
 
         <div class="input-group">
             <label for="flag">Flag:</label>
             <input type="text" id="flag" value="SF">
         </div>
 
+
         <div class="input-group">
             <label for="src_bytes">Source Bytes:</label>
             <input type="number" id="src_bytes" value="181">
         </div>
+
 
         <div class="input-group">
             <label for="dst_bytes">Destination Bytes:</label>
             <input type="number" id="dst_bytes" value="5450">
         </div>
 
-        <div class="button-row">
-          <button id="predict-button" onclick="makePrediction()">
-    Predict Network Traffic
-</button>
 
-            <button class="secondary-button" onclick="resetForm()">
+        <div class="button-row">
+
+            <button id="predict-button" onclick="makePrediction()">
+                Predict Network Traffic
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="resetForm()"
+            >
                 Reset
             </button>
+
         </div>
 
     </div>
 
+
     <h2 id="result"></h2>
 
+
     <div id="confidence-wrapper">
+
         <div id="confidence-bar-container">
             <div id="confidence-bar"></div>
         </div>
 
         <span id="confidence-text">0%</span>
+
     </div>
+
 
     <div class="model-info">
 
@@ -347,6 +477,7 @@
 
     </div>
 
+
     <div class="evaluation-summary">
 
         <h2>Evaluation Summary</h2>
@@ -372,26 +503,65 @@
 
     </div>
 
-    <div class="history-header">
-    <h2>Prediction History</h2>
 
-    <div class="button-row">
-        <button class="secondary-button" onclick="exportHistory()">
-            Export History
-        </button>
+    <div class="prediction-history">
 
-        <button class="secondary-button" onclick="clearHistory()">
-            Clear History
-        </button>
+        <div class="history-header">
+
+            <h2>Prediction History</h2>
+
+            <div class="button-row">
+
+                <button
+                    class="secondary-button"
+                    onclick="exportHistory()"
+                >
+                    Export History
+                </button>
+
+                <button
+                    class="secondary-button"
+                    onclick="clearHistory()"
+                >
+                    Clear History
+                </button>
+
+            </div>
+
+        </div>
+<div class="detection-overview">
+
+    <h2>Detection Overview</h2>
+
+    <div class="overview-card">
+
+        <div class="overview-item">
+            <span>Normal Traffic</span>
+            <strong id="normal-percentage">0%</strong>
+        </div>
+
+        <div class="overview-bar-container">
+            <div
+                id="normal-percentage-bar"
+                class="overview-bar normal-bar"
+            ></div>
+        </div>
+
+
+        <div class="overview-item">
+            <span>Attacks Detected</span>
+            <strong id="attack-percentage">0%</strong>
+        </div>
+
+        <div class="overview-bar-container">
+            <div
+                id="attack-percentage-bar"
+                class="overview-bar attack-bar"
+            ></div>
+        </div>
+
     </div>
-</div>
 
-        <div class="attack-distribution">
-                <h2>Attack Distribution</h2>
-
-             <div id="attack-distribution-list">
-        <p>No attacks detected yet.</p>
-    </div>
 </div>
 
         <div class="prediction-stats">
@@ -413,16 +583,60 @@
 
         </div>
 
-        <div id="history-list" class="history-list">
-            <p>No predictions yet.</p>
+
+        <!-- SEARCH -->
+
+        <div class="history-search-wrapper">
+
+            <input
+                type="text"
+                id="history-search"
+                placeholder="Search prediction history..."
+                oninput="filterHistory()"
+            >
+
+        </div>
+
+
+        <!-- HISTORY LIST -->
+
+        <div
+            id="history-list"
+            class="history-list"
+        >
+            <p id="history-empty" class="no-results">
+                No predictions yet.
+            </p>
         </div>
 
     </div>
 
+
+    <!-- ATTACK DISTRIBUTION -->
+
+    <div class="attack-distribution">
+
+        <h2>Attack Distribution</h2>
+
+        <div id="attack-distribution-list">
+
+            <p id="distribution-empty" class="no-results">
+                No attacks detected yet.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- DISCLAIMER -->
+
     <p class="disclaimer">
         This system is developed for educational and demonstration purposes.
-        Predictions should not be treated as a substitute for professional network security analysis.
+        Predictions should not be treated as a substitute for professional
+        network security analysis.
     </p>
+
 
     <footer>
         <p>AI-Based Network Intrusion Detection System</p>
@@ -431,52 +645,125 @@
 
     <script>
 
+
+        /* ==========================================
+           ATTACK CATEGORY MAP
+        ========================================== */
+
+        const attackCategoryMap = {
+
+            normal: "Normal",
+
+            back: "DoS",
+            land: "DoS",
+            neptune: "DoS",
+            pod: "DoS",
+            smurf: "DoS",
+            teardrop: "DoS",
+
+            ipsweep: "Probe",
+            nmap: "Probe",
+            portsweep: "Probe",
+            satan: "Probe",
+
+            ftp_write: "R2L",
+            guess_passwd: "R2L",
+            imap: "R2L",
+            multihop: "R2L",
+            phf: "R2L",
+            spy: "R2L",
+            warezclient: "R2L",
+            warezmaster: "R2L",
+
+            buffer_overflow: "U2R",
+            loadmodule: "U2R",
+            perl: "U2R",
+            rootkit: "U2R"
+        };
+
+
+        /* ==========================================
+           MAKE PREDICTION
+        ========================================== */
+
         async function makePrediction() {
 
             const predictButton =
-    document.getElementById("predict-button");
+                document.getElementById("predict-button");
 
-predictButton.disabled = true;
-predictButton.innerText = "Analyzing...";
-const serviceValue =
-    document.getElementById("service").value.trim();
 
-const flagValue =
-    document.getElementById("flag").value.trim();
+            predictButton.disabled = true;
+            predictButton.innerText = "Analyzing...";
 
-const srcBytes =
-    Number(document.getElementById("src_bytes").value);
 
-const dstBytes =
-    Number(document.getElementById("dst_bytes").value);
+            const serviceValue =
+                document.getElementById("service").value.trim();
 
-if (!serviceValue || !flagValue) {
-    alert("Please enter both Service and Flag.");
-    predictButton.disabled = false;
-    predictButton.innerText = "Predict Network Traffic";
-    return;
-}
 
-if (srcBytes < 0 || dstBytes < 0) {
-    alert("Source Bytes and Destination Bytes cannot be negative.");
-    predictButton.disabled = false;
-    predictButton.innerText = "Predict Network Traffic";
-    return;
-}
+            const flagValue =
+                document.getElementById("flag").value.trim();
+
+
+            const srcBytes =
+                Number(
+                    document.getElementById("src_bytes").value
+                );
+
+
+            const dstBytes =
+                Number(
+                    document.getElementById("dst_bytes").value
+                );
+
+
+            /* INPUT VALIDATION */
+
+            if (!serviceValue || !flagValue) {
+
+                alert(
+                    "Please enter both Service and Flag."
+                );
+
+                predictButton.disabled = false;
+                predictButton.innerText =
+                    "Predict Network Traffic";
+
+                return;
+            }
+
+
+            if (srcBytes < 0 || dstBytes < 0) {
+
+                alert(
+                    "Source Bytes and Destination Bytes cannot be negative."
+                );
+
+                predictButton.disabled = false;
+                predictButton.innerText =
+                    "Predict Network Traffic";
+
+                return;
+            }
+
+
+            /* SAMPLE DATA */
+
             const sampleData = {
+
                 duration: 0,
 
                 protocol_type:
                     document.getElementById("protocol_type").value,
 
-                service: document.getElementById("service").value,
+                service: serviceValue,
 
-                flag: document.getElementById("flag").value,
-                
-                src_bytes: Number(document.getElementById("src_bytes").value),
-                
-                dst_bytes: Number(document.getElementById("dst_bytes").value),
-                
+                flag: flagValue,
+
+                src_bytes: srcBytes,
+
+                dst_bytes: dstBytes,
+
+
                 land: 0,
                 wrong_fragment: 0,
                 urgent: 0,
@@ -521,63 +808,52 @@ if (srcBytes < 0 || dstBytes < 0) {
 
             try {
 
-                const response = await fetch("/predict", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(sampleData)
-                });
+                /* SEND REQUEST */
 
+                const response = await fetch(
+                    "/predict",
+                    {
+                        method: "POST",
 
-                if (!response.ok) {
-                    throw new Error("Prediction request failed.");
-                }
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
 
-
-                const result = await response.json();
-
-
-                const attackType = String(
-                    result.prediction || ""
-                ).toLowerCase();
-
-
-                const confidence = Number(
-                    result.confidence || 0
+                        body:
+                            JSON.stringify(sampleData)
+                    }
                 );
 
 
-                const attackCategoryMap = {
+                if (!response.ok) {
+                    throw new Error(
+                        "Prediction request failed."
+                    );
+                }
 
-                    normal: "Normal",
 
-                    back: "DoS",
-                    land: "DoS",
-                    neptune: "DoS",
-                    pod: "DoS",
-                    smurf: "DoS",
-                    teardrop: "DoS",
+                /* GET RESPONSE */
 
-                    ipsweep: "Probe",
-                    nmap: "Probe",
-                    portsweep: "Probe",
-                    satan: "Probe",
+                const result =
+                    await response.json();
 
-                    ftp_write: "R2L",
-                    guess_passwd: "R2L",
-                    imap: "R2L",
-                    multihop: "R2L",
-                    phf: "R2L",
-                    spy: "R2L",
-                    warezclient: "R2L",
-                    warezmaster: "R2L",
 
-                    buffer_overflow: "U2R",
-                    loadmodule: "U2R",
-                    perl: "U2R",
-                    rootkit: "U2R"
-                };
+                const attackType =
+                    String(
+                        result.prediction || ""
+                    ).toLowerCase();
+
+
+                const confidence =
+                    Math.max(
+                        0,
+                        Math.min(
+                            Number(
+                                result.confidence || 0
+                            ),
+                            100
+                        )
+                    );
 
 
                 const category =
@@ -586,37 +862,31 @@ if (srcBytes < 0 || dstBytes < 0) {
                     "Other";
 
 
+                /* ELEMENTS */
+
                 const resultElement =
                     document.getElementById("result");
 
 
                 const confidenceWrapper =
-                    document.getElementById("confidence-wrapper");
+                    document.getElementById(
+                        "confidence-wrapper"
+                    );
 
 
                 const confidenceBar =
-                    document.getElementById("confidence-bar");
+                    document.getElementById(
+                        "confidence-bar"
+                    );
 
 
                 const confidenceText =
-                    document.getElementById("confidence-text");
+                    document.getElementById(
+                        "confidence-text"
+                    );
 
 
-                const historyList =
-                    document.getElementById("history-list");
-
-
-                const totalCount =
-                    document.getElementById("total-count");
-
-
-                const normalCount =
-                    document.getElementById("normal-count");
-
-
-                const attackCount =
-                    document.getElementById("attack-count");
-
+                /* RESULT DISPLAY */
 
                 if (attackType === "normal") {
 
@@ -647,23 +917,42 @@ if (srcBytes < 0 || dstBytes < 0) {
                 }
 
 
-                confidenceWrapper.style.display = "flex";
+                /* CONFIDENCE */
+
+                confidenceWrapper.style.display =
+                    "flex";
+
 
                 confidenceBar.style.width =
-                    Math.max(0, Math.min(confidence, 100)) + "%";
+                    confidence + "%";
+
 
                 confidenceText.innerText =
                     confidence + "%";
 
 
                 let total =
-                    Number(localStorage.getItem("nidsTotal") || 0);
+                    Number(
+                        localStorage.getItem(
+                            "nidsTotal"
+                        ) || 0
+                    );
+
 
                 let normal =
-                    Number(localStorage.getItem("nidsNormal") || 0);
+                    Number(
+                        localStorage.getItem(
+                            "nidsNormal"
+                        ) || 0
+                    );
+
 
                 let attacks =
-                    Number(localStorage.getItem("nidsAttack") || 0);
+                    Number(
+                        localStorage.getItem(
+                            "nidsAttack"
+                        ) || 0
+                    );
 
 
                 total++;
@@ -681,10 +970,12 @@ if (srcBytes < 0 || dstBytes < 0) {
                     total
                 );
 
+
                 localStorage.setItem(
                     "nidsNormal",
                     normal
                 );
+
 
                 localStorage.setItem(
                     "nidsAttack",
@@ -692,10 +983,21 @@ if (srcBytes < 0 || dstBytes < 0) {
                 );
 
 
-                totalCount.innerText = total;
-                normalCount.innerText = normal;
-                attackCount.innerText = attacks;
+                document.getElementById(
+                    "total-count"
+                ).innerText = total;
 
+
+                document.getElementById(
+                    "normal-count"
+                ).innerText = normal;
+
+
+                document.getElementById(
+                    "attack-count"
+                ).innerText = attacks;
+
+                updateDetectionOverview();
 
                 const time =
                     new Date().toLocaleTimeString();
@@ -703,6 +1005,7 @@ if (srcBytes < 0 || dstBytes < 0) {
 
                 const historyText =
                     attackType === "normal"
+
                         ? "✓ Normal Traffic | Confidence: " +
                           confidence +
                           "% | " +
@@ -716,31 +1019,6 @@ if (srcBytes < 0 || dstBytes < 0) {
                           confidence +
                           "% | " +
                           time;
-
-
-                const historyItem =
-                    document.createElement("div");
-
-
-                historyItem.className =
-                    "history-item";
-
-
-                historyItem.innerText =
-                    historyText;
-
-
-                if (
-                    historyList.innerText.trim() ===
-                    "No predictions yet."
-                ) {
-                    historyList.innerHTML = "";
-                }
-
-
-                historyList.prepend(
-                    historyItem
-                );
 
 
                 let savedHistory =
@@ -762,67 +1040,108 @@ if (srcBytes < 0 || dstBytes < 0) {
 
                 localStorage.setItem(
                     "nidsHistory",
-                    JSON.stringify(savedHistory)
+                    JSON.stringify(
+                        savedHistory
+                    )
                 );
 
-                loadAttackDistribution();
-                
+
                 if (attackType !== "normal") {
 
-    let attackTypes = JSON.parse(
-        localStorage.getItem("nidsAttackTypes") || "{}"
-    );
+                    let attackTypes =
+                        JSON.parse(
+                            localStorage.getItem(
+                                "nidsAttackTypes"
+                            ) || "{}"
+                        );
 
-    attackTypes[attackType] =
-        (attackTypes[attackType] || 0) + 1;
 
-    localStorage.setItem(
-        "nidsAttackTypes",
-        JSON.stringify(attackTypes)
-    );
-}
+                    attackTypes[attackType] =
+                        (
+                            attackTypes[attackType] ||
+                            0
+                        ) + 1;
+
+
+                    localStorage.setItem(
+                        "nidsAttackTypes",
+                        JSON.stringify(
+                            attackTypes
+                        )
+                    );
+                }
+
+                renderHistory();
+
+                loadAttackDistribution();
+
 
             } catch (error) {
 
                 const resultElement =
-                    document.getElementById("result");
+                    document.getElementById(
+                        "result"
+                    );
+
 
                 resultElement.innerText =
                     "Unable to generate prediction.\n" +
                     "Please make sure the Flask server is running.";
 
+
                 resultElement.className =
                     "attack-result";
 
+
+                document.getElementById(
+                    "confidence-wrapper"
+                ).style.display = "none";
+
+
                 console.error(error);
 
+
+            } finally {
+
+                predictButton.disabled = false;
+
+                predictButton.innerText =
+                    "Predict Network Traffic";
             }
-finally {
-    predictButton.disabled = false;
-    predictButton.innerText = "Predict Network Traffic";
-}
-            }
-    
+        }
+
+
         function resetForm() {
 
-            document.getElementById("protocol_type").value =
-                "tcp";
+            document.getElementById(
+                "protocol_type"
+            ).value = "tcp";
 
-            document.getElementById("service").value =
-                "http";
 
-            document.getElementById("flag").value =
-                "SF";
+            document.getElementById(
+                "service"
+            ).value = "http";
 
-            document.getElementById("src_bytes").value =
-                181;
 
-            document.getElementById("dst_bytes").value =
-                5450;
+            document.getElementById(
+                "flag"
+            ).value = "SF";
+
+
+            document.getElementById(
+                "src_bytes"
+            ).value = 181;
+
+
+            document.getElementById(
+                "dst_bytes"
+            ).value = 5450;
 
 
             const resultElement =
-                document.getElementById("result");
+                document.getElementById(
+                    "result"
+                );
 
 
             resultElement.innerText = "";
@@ -846,48 +1165,172 @@ finally {
         }
 
 
-        function clearHistory() {
+        /* ==========================================
+           RENDER HISTORY
+        ========================================== */
 
-            document.getElementById(
-                "history-list"
-            ).innerHTML =
-                "<p>No predictions yet.</p>";
+        function renderHistory() {
 
-
-            document.getElementById(
-                "total-count"
-            ).innerText = "0";
-
-
-            document.getElementById(
-                "normal-count"
-            ).innerText = "0";
+            const historyList =
+                document.getElementById(
+                    "history-list"
+                );
 
 
-            document.getElementById(
-                "attack-count"
-            ).innerText = "0";
+            const savedHistory =
+                JSON.parse(
+                    localStorage.getItem(
+                        "nidsHistory"
+                    ) || "[]"
+                );
 
 
-            localStorage.removeItem(
-                "nidsTotal"
+            historyList.innerHTML = "";
+
+
+            if (savedHistory.length === 0) {
+
+                historyList.innerHTML =
+                    '<p id="history-empty" class="no-results">' +
+                    'No predictions yet.' +
+                    '</p>';
+
+                return;
+            }
+
+
+            savedHistory.forEach(
+                function (item) {
+
+                    const historyItem =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    historyItem.className =
+                        "history-item";
+
+
+                    historyItem.innerText =
+                        item;
+
+
+                    historyList.appendChild(
+                        historyItem
+                    );
+                }
             );
 
-            localStorage.removeItem(
-                "nidsNormal"
-            );
 
-            localStorage.removeItem(
-                "nidsAttack"
-            );
-
-            localStorage.removeItem(
-                "nidsHistory"
-            );
-            localStorage.removeItem("nidsAttackTypes");
-            loadAttackDistribution();
+            filterHistory();
         }
 
+
+        /* ==========================================
+           SEARCH HISTORY
+        ========================================== */
+
+        function filterHistory() {
+
+            const searchInput =
+                document.getElementById(
+                    "history-search"
+                );
+
+
+            const searchText =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const historyList =
+                document.getElementById(
+                    "history-list"
+                );
+
+
+            const historyItems =
+                historyList.querySelectorAll(
+                    ".history-item"
+                );
+
+
+            const oldMessage =
+                document.getElementById(
+                    "history-filter-empty"
+                );
+
+
+            if (oldMessage) {
+                oldMessage.remove();
+            }
+
+
+            let visibleCount = 0;
+
+
+            historyItems.forEach(
+                function (item) {
+
+                    const matches =
+                        item.innerText
+                            .toLowerCase()
+                            .includes(
+                                searchText
+                            );
+
+
+                    if (matches) {
+
+                        item.style.display =
+                            "block";
+
+                        visibleCount++;
+
+                    } else {
+
+                        item.style.display =
+                            "none";
+                    }
+                }
+            );
+
+
+            if (
+                historyItems.length > 0 &&
+                visibleCount === 0
+            ) {
+
+                const message =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                message.id =
+                    "history-filter-empty";
+
+
+                message.className =
+                    "no-results";
+
+
+                message.innerText =
+                    "No matching predictions found.";
+
+
+                historyList.appendChild(
+                    message
+                );
+            }
+        }
+
+
+        /* ==========================================
+           LOAD SAVED COUNTERS
+        ========================================== */
 
         function loadSavedData() {
 
@@ -915,6 +1358,233 @@ finally {
                 ) || "0";
 
 
+            renderHistory();
+        }
+
+
+        /* ==========================================
+           ATTACK DISTRIBUTION
+        ========================================== */
+
+        function loadAttackDistribution() {
+
+            const distributionList =
+                document.getElementById(
+                    "attack-distribution-list"
+                );
+
+
+            const attackTypes =
+                JSON.parse(
+                    localStorage.getItem(
+                        "nidsAttackTypes"
+                    ) || "{}"
+                );
+
+
+            const entries =
+                Object.entries(
+                    attackTypes
+                );
+
+
+            distributionList.innerHTML = "";
+
+
+            if (entries.length === 0) {
+
+                distributionList.innerHTML =
+                    '<p class="no-results">' +
+                    'No attacks detected yet.' +
+                    '</p>';
+
+                return;
+            }
+
+
+            entries.sort(
+                function (a, b) {
+                    return b[1] - a[1];
+                }
+            );
+
+
+            const maxCount =
+                entries[0][1];
+
+
+            entries.forEach(
+                function (entry) {
+
+                    const attackType =
+                        entry[0];
+
+
+                    const count =
+                        entry[1];
+
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    row.className =
+                        "distribution-row";
+
+
+                    const header =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    header.className =
+                        "distribution-header";
+
+
+                    const name =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    name.innerText =
+                        attackType;
+
+
+                    const countText =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    countText.innerText =
+                        count +
+                        " detection(s)";
+
+
+                    header.appendChild(
+                        name
+                    );
+
+
+                    header.appendChild(
+                        countText
+                    );
+
+
+                    const barContainer =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    barContainer.className =
+                        "distribution-bar-container";
+
+
+                    const bar =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    bar.className =
+                        "distribution-bar";
+
+
+                    bar.style.width =
+                        (
+                            count /
+                            maxCount
+                        ) *
+                        100 +
+                        "%";
+
+
+                    barContainer.appendChild(
+                        bar
+                    );
+
+
+                    row.appendChild(
+                        header
+                    );
+
+
+                    row.appendChild(
+                        barContainer
+                    );
+
+
+                    distributionList.appendChild(
+                        row
+                    );
+                }
+            );
+        }
+
+
+        /* ==========================================
+           CLEAR HISTORY
+        ========================================== */
+
+        function clearHistory() {
+
+            localStorage.removeItem(
+                "nidsTotal"
+            );
+
+
+            localStorage.removeItem(
+                "nidsNormal"
+            );
+
+
+            localStorage.removeItem(
+                "nidsAttack"
+            );
+
+
+            localStorage.removeItem(
+                "nidsHistory"
+            );
+
+
+            localStorage.removeItem(
+                "nidsAttackTypes"
+            );
+
+
+            document.getElementById(
+                "history-search"
+            ).value = "";
+
+
+            document.getElementById(
+                "total-count"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "normal-count"
+            ).innerText = "0";
+
+
+            document.getElementById(
+                "attack-count"
+            ).innerText = "0";
+
+
+            renderHistory();
+
+            loadAttackDistribution();
+        }
+
+        function exportHistory() {
+
             const savedHistory =
                 JSON.parse(
                     localStorage.getItem(
@@ -923,123 +1593,170 @@ finally {
                 );
 
 
-            const historyList =
-                document.getElementById(
-                    "history-list"
+            if (
+                savedHistory.length === 0
+            ) {
+
+                alert(
+                    "No prediction history available."
                 );
 
-
-            if (savedHistory.length > 0) {
-
-                historyList.innerHTML = "";
+                return;
+            }
 
 
-                savedHistory.forEach(
-                    function (item) {
+            const csvContent =
+                "Prediction History\n" +
+                savedHistory
+                    .map(
+                        function (item) {
 
-                        const historyItem =
-                            document.createElement(
-                                "div"
+                            return (
+                                '"' +
+                                item.replace(
+                                    /"/g,
+                                    '""'
+                                ) +
+                                '"'
                             );
+                        }
+                    )
+                    .join(
+                        "\n"
+                    );
 
 
-                        historyItem.className =
-                            "history-item";
-
-
-                        historyItem.innerText =
-                            item;
-
-
-                        historyList.appendChild(
-                            historyItem
-                        );
+            const blob =
+                new Blob(
+                    [csvContent],
+                    {
+                        type:
+                            "text/csv;charset=utf-8;"
                     }
                 );
-            }
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href = url;
+
+
+            link.download =
+                "nids_prediction_history.csv";
+
+
+            document.body.appendChild(
+                link
+            );
+
+
+            link.click();
+
+
+            document.body.removeChild(
+                link
+            );
+
+
+            URL.revokeObjectURL(
+                url
+            );
         }
 
+        window.addEventListener(
+            "load",
+            function () {
 
-       window.addEventListener("load", function () {
-    loadSavedData();
-    loadAttackDistribution();
-});
+                loadSavedData();
 
-        function loadAttackDistribution() {
-    const distributionList =
-        document.getElementById("attack-distribution-list");
+                loadAttackDistribution();
 
-    const attackTypes = JSON.parse(
-        localStorage.getItem("nidsAttackTypes") || "{}"
-    );
+                updateDetectionOverview();
+            }
+        );
 
-    const entries = Object.entries(attackTypes);
+        function updateDetectionOverview() {
 
-    if (entries.length === 0) {
-        distributionList.innerHTML =
-            "<p>No attacks detected yet.</p>";
+    const total =
+        Number(
+            localStorage.getItem("nidsTotal") || 0
+        );
+
+    const normal =
+        Number(
+            localStorage.getItem("nidsNormal") || 0
+        );
+
+    const attacks =
+        Number(
+            localStorage.getItem("nidsAttack") || 0
+        );
+
+
+    if (total === 0) {
+
+        document.getElementById(
+            "normal-percentage"
+        ).innerText = "0%";
+
+        document.getElementById(
+            "attack-percentage"
+        ).innerText = "0%";
+
+        document.getElementById(
+            "normal-percentage-bar"
+        ).style.width = "0%";
+
+        document.getElementById(
+            "attack-percentage-bar"
+        ).style.width = "0%";
+
         return;
     }
 
-    distributionList.innerHTML = "";
 
-    entries.sort(function (a, b) {
-        return b[1] - a[1];
-    });
+    const normalPercentage =
+        (normal / total) * 100;
 
-    entries.forEach(function (entry) {
-        const attackType = entry[0];
-        const count = entry[1];
 
-        const item = document.createElement("div");
+    const attackPercentage =
+        (attacks / total) * 100;
 
-        item.style.padding = "10px";
-        item.style.marginBottom = "8px";
-        item.style.background = "#f4f4f4";
-        item.style.borderRadius = "8px";
 
-        item.innerText =
-            attackType + " — " + count + " detection(s)";
+    document.getElementById(
+        "normal-percentage"
+    ).innerText =
+        normalPercentage.toFixed(1) + "%";
 
-        distributionList.appendChild(item);
-    });
+
+    document.getElementById(
+        "attack-percentage"
+    ).innerText =
+        attackPercentage.toFixed(1) + "%";
+
+
+    document.getElementById(
+        "normal-percentage-bar"
+    ).style.width =
+        normalPercentage + "%";
+
+
+    document.getElementById(
+        "attack-percentage-bar"
+    ).style.width =
+        attackPercentage + "%";
 }
 
-function exportHistory() {
-    const savedHistory = JSON.parse(
-        localStorage.getItem("nidsHistory") || "[]"
-    );
-
-    if (savedHistory.length === 0) {
-        alert("No prediction history available.");
-        return;
-    }
-
-    const csvContent =
-        "Prediction History\n" +
-        savedHistory
-            .map(function (item) {
-                return '"' + item.replace(/"/g, '""') + '"';
-            })
-            .join("\n");
-
-    const blob = new Blob(
-        [csvContent],
-        { type: "text/csv;charset=utf-8;" }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "nids_prediction_history.csv";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-}
     </script>
 
 </body>

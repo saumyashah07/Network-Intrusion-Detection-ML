@@ -5,392 +5,397 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIDS Prediction</title>
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-    body {
-        font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-        max-width: 950px;
-        margin: 0 auto;
-        padding: 35px 25px;
-        background: #fafafa;
-        color: #222;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    h1,
-    h2,
-    h3,
-    p,
-    span,
-    label,
-    input,
-    select,
-    button {
-        font-family: "Poppins", "Segoe UI", Arial, sans-serif;
-    }
-
-    h1 {
-        margin-bottom: 8px;
-    }
-
-    h2 {
-        margin-top: 30px;
-        margin-bottom: 15px;
-    }
-
-    .subtitle {
-        color: #666;
-        font-size: 16px;
-        margin-top: 0;
-        margin-bottom: 15px;
-    }
-
-    .project-status {
-        font-size: 13px;
-        color: #888;
-        margin-bottom: 25px;
-    }
-
-    .input-section {
-        margin-top: 25px;
-    }
-
-    .input-group {
-        margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-    }
-
-    input,
-    select {
-        width: 100%;
-        max-width: 500px;
-        padding: 11px 12px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 14px;
-        background: white;
-    }
-
-    .button-row {
-        display: flex;
-        gap: 10px;
-        margin-top: 25px;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-
-    button {
-        padding: 11px 18px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        background: #222;
-        color: white;
-    }
-
-    button:hover {
-        opacity: 0.9;
-    }
-
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .secondary-button {
-        background: #e6e6e6;
-        color: #222;
-    }
-
-    .model-info,
-    .model-comparison,
-    .evaluation-summary,
-    .prediction-history,
-    .attack-distribution,
-    .detection-overview {
-        margin-top: 30px;
-    }
-
-    .model-cards,
-    .evaluation-cards,
-    .prediction-stats {
-        display: flex;
-        gap: 15px;
-        width: 100%;
-        flex-wrap: wrap;
-    }
-
-    .model-card,
-    .evaluation-card,
-    .stat-card {
-        flex: 1;
-        min-width: 180px;
-        padding: 18px;
-        border-radius: 12px;
-        background: #f4f4f4;
-        text-align: center;
-    }
-
-    .model-card h3,
-    .evaluation-card h3,
-    .stat-card h3 {
-        margin: 0 0 8px;
-    }
-
-    .model-card p,
-    .evaluation-card p,
-    .stat-card p {
-        margin: 0;
-        color: #666;
-        font-size: 14px;
-    }
-
-    .evaluation-card p {
-        font-size: 20px;
-        font-weight: bold;
-        color: #222;
-    }
-
-    .comparison-item {
-        margin-bottom: 18px;
-    }
-
-    .comparison-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 7px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .comparison-bar-container {
-        width: 100%;
-        height: 10px;
-        background: #e5e5e5;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .comparison-bar {
-        height: 100%;
-        background: #4caf50;
-        border-radius: 10px;
-    }
-
-    #result {
-        display: none;
-        padding: 15px;
-        margin-top: 25px;
-        border-radius: 10px;
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 1.35;
-        white-space: pre-line;
-    }
-
-    .normal-result {
-        display: block !important;
-        background: #e8f5e9;
-        color: #2e7d32;
-    }
-
-    .attack-result {
-        display: block !important;
-        background: #ffebee;
-        color: #c62828;
-    }
-
-    #confidence-wrapper {
-        display: none;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 10px;
-        margin: 10px 0 20px;
-    }
-
-    #confidence-bar-container {
-        width: 220px;
-        height: 10px;
-        background: #e5e5e5;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    #confidence-bar {
-        width: 0%;
-        height: 100%;
-        background: #4caf50;
-        border-radius: 10px;
-        transition: width 0.4s ease;
-    }
-
-    #confidence-text {
-        font-size: 13px;
-        font-weight: 600;
-    }
-
-    .history-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .history-header h2 {
-        margin: 0;
-    }
-
-    .history-header .button-row {
-        margin-top: 0;
-    }
-
-    .prediction-stats {
-        margin-top: 15px;
-    }
-
-    .history-search-wrapper {
-        width: 100%;
-        margin-top: 18px;
-        margin-bottom: 12px;
-    }
-
-    #history-search {
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .history-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 15px;
-    }
-
-    .history-item {
-        padding: 11px 14px;
-        border-radius: 8px;
-        background: #f4f4f4;
-        font-size: 14px;
-    }
-
-    .no-results {
-        color: #777;
-        font-size: 14px;
-    }
-
-    .distribution-row {
-        margin-bottom: 16px;
-    }
-
-    .distribution-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 6px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .distribution-bar-container {
-        width: 100%;
-        height: 9px;
-        background: #e5e5e5;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .distribution-bar {
-        height: 100%;
-        background: #4caf50;
-        border-radius: 10px;
-        transition: width 0.4s ease;
-    }
-
-    .overview-card {
-        padding: 20px;
-        border-radius: 12px;
-        background: #f4f4f4;
-    }
-
-    .overview-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 7px;
-        font-size: 14px;
-    }
-
-    .overview-bar-container {
-        width: 100%;
-        height: 9px;
-        margin-bottom: 18px;
-        background: #e5e5e5;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .overview-bar {
-        height: 100%;
-        width: 0%;
-        border-radius: 10px;
-        transition: width 0.4s ease;
-    }
-
-    .normal-bar {
-        background: #4caf50;
-    }
-
-    .attack-bar {
-        background: #c62828;
-    }
-
-    .disclaimer {
-        margin-top: 35px;
-        padding: 12px;
-        text-align: center;
-        font-size: 12px;
-        color: #777;
-        line-height: 1.5;
-    }
-
-    footer {
-        margin-top: 20px;
-        padding: 15px;
-        text-align: center;
-        font-size: 13px;
-        color: #888;
-    }
-
-    @media (max-width: 650px) {
         body {
-            padding: 25px 15px;
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 35px 25px;
+            background: #fafafa;
+            color: #222;
+        }
+
+        h1,
+        h2,
+        h3,
+        p,
+        span,
+        label,
+        input,
+        select,
+        button {
+            font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .project-status {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .input-section {
+            margin-top: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            max-width: 500px;
+            padding: 11px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            background: #222;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .secondary-button {
+            background: #e6e6e6;
+            color: #222;
+        }
+
+        .model-info,
+        .model-comparison,
+        .evaluation-summary,
+        .prediction-history,
+        .attack-distribution,
+        .detection-overview {
+            margin-top: 30px;
+        }
+
+        .model-cards,
+        .evaluation-cards,
+        .prediction-stats {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            flex-wrap: wrap;
         }
 
         .model-card,
         .evaluation-card,
         .stat-card {
-            min-width: 100%;
+            flex: 1;
+            min-width: 180px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .model-card h3,
+        .evaluation-card h3,
+        .stat-card h3 {
+            margin: 0 0 8px;
+        }
+
+        .model-card p,
+        .evaluation-card p,
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .evaluation-card p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .comparison-item {
+            margin-bottom: 18px;
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .comparison-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-bar {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 10px;
+        }
+
+        #result {
+            display: none;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .normal-result {
+            display: block !important;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .attack-result {
+            display: block !important;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        #confidence-wrapper {
+            display: none;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+            margin: 10px 0 20px;
         }
 
         #confidence-bar-container {
-            width: 170px;
+            width: 220px;
+            height: 10px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #confidence-bar {
+            width: 0%;
+            height: 100%;
+            background: #4caf50;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        #confidence-text {
+            font-size: 13px;
+            font-weight: 600;
         }
 
         .history-header {
-            align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
-    }
-</style>
+
+        .history-header h2 {
+            margin: 0;
+        }
+
+        .history-header .button-row {
+            margin-top: 0;
+        }
+
+        .prediction-stats {
+            margin-top: 15px;
+        }
+
+        .history-search-wrapper {
+            width: 100%;
+            margin-top: 18px;
+            margin-bottom: 12px;
+        }
+
+        #history-search {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .history-item {
+            padding: 11px 14px;
+            border-radius: 8px;
+            background: #f4f4f4;
+            font-size: 14px;
+        }
+
+        .no-results {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .distribution-row {
+            margin-bottom: 16px;
+        }
+
+        .distribution-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .distribution-bar-container {
+            width: 100%;
+            height: 9px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .distribution-bar {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .overview-card {
+            padding: 20px;
+            border-radius: 12px;
+            background: #f4f4f4;
+        }
+
+        .overview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .overview-bar-container {
+            width: 100%;
+            height: 9px;
+            margin-bottom: 18px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .overview-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .normal-bar {
+            background: #4caf50;
+        }
+
+        .attack-bar {
+            background: #c62828;
+        }
+
+        .disclaimer {
+            margin-top: 35px;
+            padding: 12px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 25px 15px;
+            }
+
+            .model-card,
+            .evaluation-card,
+            .stat-card {
+                min-width: 100%;
+            }
+
+            #confidence-bar-container {
+                width: 170px;
+            }
+
+            .history-header {
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -476,6 +481,13 @@
                 onclick="loadNormalSample()"
             >
                 Load Normal Sample
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="loadAttackSample()"
+            >
+                Load Attack Sample
             </button>
 
             <button
@@ -722,8 +734,7 @@
 
     <p class="disclaimer">
         This system is developed for educational and demonstration purposes.
-        Predictions should not be treated as a substitute for professional
-        network security analysis.
+        Predictions should not be treated as a substitute for professional network security analysis.
     </p>
 
     <footer>
@@ -731,6 +742,7 @@
     </footer>
 
     <script>
+        let attackSampleLoaded = false;
 
         const attackCategoryMap = {
             normal: "Normal",
@@ -758,8 +770,52 @@
             rootkit: "U2R"
         };
 
+        const attackSampleData = {
+            duration: 0,
+            protocol_type: "tcp",
+            service: "private",
+            flag: "S0",
+            src_bytes: 0,
+            dst_bytes: 0,
+            land: 0,
+            wrong_fragment: 0,
+            urgent: 0,
+            hot: 0,
+            num_failed_logins: 0,
+            logged_in: 0,
+            num_compromised: 0,
+            root_shell: 0,
+            su_attempted: 0,
+            num_root: 0,
+            num_file_creations: 0,
+            num_shells: 0,
+            num_access_files: 0,
+            num_outbound_cmds: 0,
+            is_host_login: 0,
+            is_guest_login: 0,
+            count: 123,
+            srv_count: 6,
+            serror_rate: 1.0,
+            srv_serror_rate: 1.0,
+            rerror_rate: 0.0,
+            srv_rerror_rate: 0.0,
+            same_srv_rate: 0.05,
+            diff_srv_rate: 0.07,
+            srv_diff_host_rate: 0.0,
+            dst_host_count: 255,
+            dst_host_srv_count: 26,
+            dst_host_same_srv_rate: 0.1,
+            dst_host_diff_srv_rate: 0.05,
+            dst_host_same_src_port_rate: 0.0,
+            dst_host_srv_diff_host_rate: 0.0,
+            dst_host_serror_rate: 1.0,
+            dst_host_srv_serror_rate: 1.0,
+            dst_host_rerror_rate: 0.0,
+            dst_host_srv_rerror_rate: 0.0
+        };
 
         function loadNormalSample() {
+            attackSampleLoaded = false;
 
             document.getElementById("protocol_type").value = "tcp";
             document.getElementById("service").value = "http";
@@ -768,124 +824,43 @@
             document.getElementById("dst_bytes").value = 5450;
         }
 
+        function loadAttackSample() {
+            attackSampleLoaded = true;
 
-        async function makePrediction() {
+            document.getElementById("protocol_type").value = "tcp";
+            document.getElementById("service").value = "private";
+            document.getElementById("flag").value = "S0";
+            document.getElementById("src_bytes").value = 0;
+            document.getElementById("dst_bytes").value = 0;
+        }
 
-            const predictButton =
-                document.getElementById(
-                    "predict-button"
-                );
+        function resetForm() {
+            attackSampleLoaded = false;
 
+            document.getElementById("protocol_type").value = "";
+            document.getElementById("service").value = "";
+            document.getElementById("flag").value = "";
+            document.getElementById("src_bytes").value = "";
+            document.getElementById("dst_bytes").value = "";
 
-            predictButton.disabled = true;
-            predictButton.innerText = "Analyzing...";
+            const resultElement = document.getElementById("result");
 
+            resultElement.innerText = "";
+            resultElement.className = "";
 
-            const protocolValue =
-                document.getElementById(
-                    "protocol_type"
-                ).value;
+            document.getElementById("confidence-wrapper").style.display = "none";
+            document.getElementById("confidence-bar").style.width = "0%";
+            document.getElementById("confidence-text").innerText = "0%";
+        }
 
-
-            const serviceValue =
-                document.getElementById(
-                    "service"
-                ).value.trim();
-
-
-            const flagValue =
-                document.getElementById(
-                    "flag"
-                ).value.trim();
-
-
-            const srcBytes =
-                Number(
-                    document.getElementById(
-                        "src_bytes"
-                    ).value
-                );
-
-
-            const dstBytes =
-                Number(
-                    document.getElementById(
-                        "dst_bytes"
-                    ).value
-                );
-
-
-            if (
-                !protocolValue ||
-                !serviceValue ||
-                !flagValue
-            ) {
-
-                alert(
-                    "Please fill in Protocol Type, Service and Flag."
-                );
-
-                predictButton.disabled = false;
-                predictButton.innerText =
-                    "Predict Network Traffic";
-
-                return;
-            }
-
-
-            if (
-                Number.isNaN(srcBytes) ||
-                Number.isNaN(dstBytes)
-            ) {
-
-                alert(
-                    "Please enter valid byte values."
-                );
-
-                predictButton.disabled = false;
-                predictButton.innerText =
-                    "Predict Network Traffic";
-
-                return;
-            }
-
-
-            if (
-                srcBytes < 0 ||
-                dstBytes < 0
-            ) {
-
-                alert(
-                    "Source Bytes and Destination Bytes cannot be negative."
-                );
-
-                predictButton.disabled = false;
-                predictButton.innerText =
-                    "Predict Network Traffic";
-
-                return;
-            }
-
-
-            const sampleData = {
-
+        function buildManualSample() {
+            return {
                 duration: 0,
-
-                protocol_type:
-                    protocolValue,
-
-                service:
-                    serviceValue,
-
-                flag:
-                    flagValue,
-
-                src_bytes:
-                    srcBytes,
-
-                dst_bytes:
-                    dstBytes,
-
+                protocol_type: document.getElementById("protocol_type").value,
+                service: document.getElementById("service").value.trim(),
+                flag: document.getElementById("flag").value.trim(),
+                src_bytes: Number(document.getElementById("src_bytes").value),
+                dst_bytes: Number(document.getElementById("dst_bytes").value),
                 land: 0,
                 wrong_fragment: 0,
                 urgent: 0,
@@ -902,19 +877,15 @@
                 num_outbound_cmds: 0,
                 is_host_login: 0,
                 is_guest_login: 0,
-
                 count: 1,
                 srv_count: 1,
-
                 serror_rate: 0,
                 srv_serror_rate: 0,
                 rerror_rate: 0,
                 srv_rerror_rate: 0,
-
                 same_srv_rate: 1,
                 diff_srv_rate: 0,
                 srv_diff_host_rate: 0,
-
                 dst_host_count: 9,
                 dst_host_srv_count: 9,
                 dst_host_same_srv_rate: 1,
@@ -926,101 +897,97 @@
                 dst_host_rerror_rate: 0,
                 dst_host_srv_rerror_rate: 0
             };
+        }
 
+        async function makePrediction() {
+            const predictButton = document.getElementById("predict-button");
+
+            predictButton.disabled = true;
+            predictButton.innerText = "Analyzing...";
+
+            const protocolValue = document.getElementById("protocol_type").value;
+            const serviceValue = document.getElementById("service").value.trim();
+            const flagValue = document.getElementById("flag").value.trim();
+            const srcBytesValue = document.getElementById("src_bytes").value;
+            const dstBytesValue = document.getElementById("dst_bytes").value;
+
+            const srcBytes = Number(srcBytesValue);
+            const dstBytes = Number(dstBytesValue);
+
+            if (
+                !attackSampleLoaded &&
+                (
+                    !protocolValue ||
+                    !serviceValue ||
+                    !flagValue ||
+                    srcBytesValue === "" ||
+                    dstBytesValue === ""
+                )
+            ) {
+                alert("Please enter all input values.");
+                predictButton.disabled = false;
+                predictButton.innerText = "Predict Network Traffic";
+                return;
+            }
+
+            if (!Number.isFinite(srcBytes) || !Number.isFinite(dstBytes)) {
+                alert("Source Bytes and Destination Bytes must be valid numbers.");
+                predictButton.disabled = false;
+                predictButton.innerText = "Predict Network Traffic";
+                return;
+            }
+
+            if (srcBytes < 0 || dstBytes < 0) {
+                alert("Source Bytes and Destination Bytes cannot be negative.");
+                predictButton.disabled = false;
+                predictButton.innerText = "Predict Network Traffic";
+                return;
+            }
+
+            const sampleData = attackSampleLoaded
+                ? attackSampleData
+                : buildManualSample();
 
             try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(sampleData)
+                });
 
-                const response =
-                    await fetch(
-                        "/predict",
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-                            body:
-                                JSON.stringify(
-                                    sampleData
-                                )
-                        }
-                    );
-
+                const result = await response.json();
 
                 if (!response.ok) {
                     throw new Error(
-                        "Prediction request failed."
+                        result.error || "Prediction request failed."
                     );
                 }
 
+                const attackType = String(
+                    result.prediction || ""
+                ).toLowerCase();
 
-                const result =
-                    await response.json();
-
-
-                if (result.error) {
-                    throw new Error(
-                        result.error
-                    );
-                }
-
-
-                const attackType =
-                    String(
-                        result.prediction || ""
-                    ).toLowerCase();
-
-
-                const confidence =
-                    Math.max(
-                        0,
-                        Math.min(
-                            Number(
-                                result.confidence || 0
-                            ),
-                            100
-                        )
-                    );
-
+                const confidence = Math.max(
+                    0,
+                    Math.min(
+                        Number(result.confidence || 0),
+                        100
+                    )
+                );
 
                 const category =
                     result.category ||
-                    attackCategoryMap[
-                        attackType
-                    ] ||
+                    attackCategoryMap[attackType] ||
                     "Other";
 
-
                 const resultElement =
-                    document.getElementById(
-                        "result"
-                    );
+                    document.getElementById("result");
 
-
-                const confidenceWrapper =
-                    document.getElementById(
-                        "confidence-wrapper"
-                    );
-
-
-                const confidenceBar =
-                    document.getElementById(
-                        "confidence-bar"
-                    );
-
-
-                const confidenceText =
-                    document.getElementById(
-                        "confidence-text"
-                    );
-
-
-                if (
-                    attackType === "normal"
-                ) {
-
+                if (attackType === "normal") {
                     resultElement.innerText =
-                        "✓ Normal Traffic\n" +
+                        "Normal Traffic\n" +
                         "Category: Normal\n" +
                         "Confidence: " +
                         confidence +
@@ -1028,11 +995,9 @@
 
                     resultElement.className =
                         "normal-result";
-
                 } else {
-
                     resultElement.innerText =
-                        "⚠ Attack Detected\n" +
+                        "Attack Detected\n" +
                         "Attack Type: " +
                         attackType +
                         "\nCategory: " +
@@ -1045,773 +1010,427 @@
                         "attack-result";
                 }
 
+                document.getElementById(
+                    "confidence-wrapper"
+                ).style.display = "flex";
 
-                confidenceWrapper.style.display =
-                    "flex";
+                document.getElementById(
+                    "confidence-bar"
+                ).style.width = confidence + "%";
 
+                document.getElementById(
+                    "confidence-text"
+                ).innerText = confidence + "%";
 
-                confidenceBar.style.width =
-                    confidence + "%";
+                let total = Number(
+                    localStorage.getItem("nidsTotal") || 0
+                );
 
+                let normal = Number(
+                    localStorage.getItem("nidsNormal") || 0
+                );
 
-                confidenceText.innerText =
-                    confidence + "%";
-
-
-                let total =
-                    Number(
-                        localStorage.getItem(
-                            "nidsTotal"
-                        ) || 0
-                    );
-
-
-                let normal =
-                    Number(
-                        localStorage.getItem(
-                            "nidsNormal"
-                        ) || 0
-                    );
-
-
-                let attacks =
-                    Number(
-                        localStorage.getItem(
-                            "nidsAttack"
-                        ) || 0
-                    );
-
+                let attacks = Number(
+                    localStorage.getItem("nidsAttack") || 0
+                );
 
                 total++;
 
-
-                if (
-                    attackType === "normal"
-                ) {
+                if (attackType === "normal") {
                     normal++;
                 } else {
                     attacks++;
-                }
 
+                    let attackTypes = JSON.parse(
+                        localStorage.getItem(
+                            "nidsAttackTypes"
+                        ) || "{}"
+                    );
+
+                    attackTypes[attackType] =
+                        (attackTypes[attackType] || 0) + 1;
+
+                    localStorage.setItem(
+                        "nidsAttackTypes",
+                        JSON.stringify(attackTypes)
+                    );
+                }
 
                 localStorage.setItem(
                     "nidsTotal",
                     total
                 );
 
-
                 localStorage.setItem(
                     "nidsNormal",
                     normal
                 );
-
 
                 localStorage.setItem(
                     "nidsAttack",
                     attacks
                 );
 
+const now = new Date().toLocaleString();
 
-                document.getElementById(
-                    "total-count"
-                ).innerText =
-                    total;
+const historyText =
+    attackType === "normal"
+        ? "Normal Traffic — Normal — " +
+          confidence +
+          "% — " +
+          now
+        : attackType +
+          " — " +
+          category +
+          " — " +
+          confidence +
+          "% — " +
+          now;
 
-
-                document.getElementById(
-                    "normal-count"
-                ).innerText =
-                    normal;
-
-
-                document.getElementById(
-                    "attack-count"
-                ).innerText =
-                    attacks;
-
-
-                const time =
-                    new Date().toLocaleTimeString();
-
-
-                const historyText =
-                    attackType === "normal"
-                        ? "✓ Normal Traffic | Confidence: " +
-                          confidence +
-                          "% | " +
-                          time
-                        : "⚠ " +
-                          attackType +
-                          " | Category: " +
-                          category +
-                          " | Confidence: " +
-                          confidence +
-                          "% | " +
-                          time;
-
-
-                let savedHistory =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "nidsHistory"
-                        ) || "[]"
-                    );
-
-
-                savedHistory.unshift(
-                    historyText
+                let savedHistory = JSON.parse(
+                    localStorage.getItem("nidsHistory") || "[]"
                 );
 
-
-                savedHistory =
-                    savedHistory.slice(
-                        0,
-                        20
-                    );
-
+                savedHistory.unshift(historyText);
+                savedHistory = savedHistory.slice(0, 20);
 
                 localStorage.setItem(
                     "nidsHistory",
-                    JSON.stringify(
-                        savedHistory
-                    )
+                    JSON.stringify(savedHistory)
                 );
 
+                document.getElementById(
+                    "total-count"
+                ).innerText = total;
 
-                if (
-                    attackType !== "normal"
-                ) {
+                document.getElementById(
+                    "normal-count"
+                ).innerText = normal;
 
-                    let attackTypes =
-                        JSON.parse(
-                            localStorage.getItem(
-                                "nidsAttackTypes"
-                            ) || "{}"
-                        );
-
-
-                    attackTypes[attackType] =
-                        (
-                            attackTypes[attackType] ||
-                            0
-                        ) + 1;
-
-
-                    localStorage.setItem(
-                        "nidsAttackTypes",
-                        JSON.stringify(
-                            attackTypes
-                        )
-                    );
-                }
-
+                document.getElementById(
+                    "attack-count"
+                ).innerText = attacks;
 
                 renderHistory();
                 loadAttackDistribution();
                 updateDetectionOverview();
 
             } catch (error) {
-
                 const resultElement =
-                    document.getElementById(
-                        "result"
-                    );
-
+                    document.getElementById("result");
 
                 resultElement.innerText =
                     "Unable to generate prediction.\n" +
                     error.message;
 
-
                 resultElement.className =
                     "attack-result";
 
-
                 document.getElementById(
                     "confidence-wrapper"
-                ).style.display =
-                    "none";
-
+                ).style.display = "none";
 
                 console.error(error);
 
             } finally {
-
                 predictButton.disabled = false;
-
                 predictButton.innerText =
                     "Predict Network Traffic";
             }
         }
 
-
-        function resetForm() {
-
-            document.getElementById(
-                "protocol_type"
-            ).value = "";
-
-
-            document.getElementById(
-                "service"
-            ).value = "";
-
-
-            document.getElementById(
-                "flag"
-            ).value = "";
-
-
-            document.getElementById(
-                "src_bytes"
-            ).value = "";
-
-
-            document.getElementById(
-                "dst_bytes"
-            ).value = "";
-
-
-            document.getElementById(
-                "result"
-            ).innerText = "";
-
-
-            document.getElementById(
-                "result"
-            ).className = "";
-
-
-            document.getElementById(
-                "confidence-wrapper"
-            ).style.display =
-                "none";
-
-
-            document.getElementById(
-                "confidence-bar"
-            ).style.width =
-                "0%";
-
-
-            document.getElementById(
-                "confidence-text"
-            ).innerText =
-                "0%";
-        }
-
-
         function renderHistory() {
-
             const historyList =
-                document.getElementById(
-                    "history-list"
-                );
+                document.getElementById("history-list");
 
-
-            const savedHistory =
-                JSON.parse(
-                    localStorage.getItem(
-                        "nidsHistory"
-                    ) || "[]"
-                );
-
+            const savedHistory = JSON.parse(
+                localStorage.getItem("nidsHistory") || "[]"
+            );
 
             historyList.innerHTML = "";
 
-
-            if (
-                savedHistory.length === 0
-            ) {
-
+            if (savedHistory.length === 0) {
                 historyList.innerHTML =
                     '<p class="no-results">No predictions yet.</p>';
-
                 return;
             }
 
+            savedHistory.forEach(function(item) {
+                const historyItem =
+                    document.createElement("div");
 
-            savedHistory.forEach(
-                function (item) {
+                historyItem.className =
+                    "history-item";
 
-                    const historyItem =
-                        document.createElement(
-                            "div"
-                        );
+                historyItem.innerText = item;
 
-
-                    historyItem.className =
-                        "history-item";
-
-
-                    historyItem.innerText =
-                        item;
-
-
-                    historyList.appendChild(
-                        historyItem
-                    );
-                }
-            );
-
+                historyList.appendChild(historyItem);
+            });
 
             filterHistory();
         }
 
-
         function filterHistory() {
-
             const searchInput =
-                document.getElementById(
-                    "history-search"
-                );
-
+                document.getElementById("history-search");
 
             const searchText =
-                searchInput.value
-                    .trim()
-                    .toLowerCase();
-
+                searchInput.value.trim().toLowerCase();
 
             const historyItems =
-                document.querySelectorAll(
-                    ".history-item"
-                );
-
+                document.querySelectorAll(".history-item");
 
             let visibleCount = 0;
 
+            historyItems.forEach(function(item) {
+                const matches =
+                    item.innerText
+                        .toLowerCase()
+                        .includes(searchText);
 
-            historyItems.forEach(
-                function (item) {
+                item.style.display =
+                    matches ? "block" : "none";
 
-                    const matches =
-                        item.innerText
-                            .toLowerCase()
-                            .includes(
-                                searchText
-                            );
-
-
-                    if (matches) {
-
-                        item.style.display =
-                            "block";
-
-                        visibleCount++;
-
-                    } else {
-
-                        item.style.display =
-                            "none";
-                    }
+                if (matches) {
+                    visibleCount++;
                 }
-            );
-
+            });
 
             const oldMessage =
                 document.getElementById(
                     "history-filter-empty"
                 );
 
-
             if (oldMessage) {
                 oldMessage.remove();
             }
-
 
             if (
                 historyItems.length > 0 &&
                 visibleCount === 0
             ) {
-
                 const message =
-                    document.createElement(
-                        "p"
-                    );
-
+                    document.createElement("p");
 
                 message.id =
                     "history-filter-empty";
 
-
                 message.className =
                     "no-results";
-
 
                 message.innerText =
                     "No matching predictions found.";
 
-
                 document.getElementById(
                     "history-list"
-                ).appendChild(
-                    message
-                );
+                ).appendChild(message);
             }
         }
 
-
         function loadSavedData() {
-
             document.getElementById(
                 "total-count"
             ).innerText =
-                localStorage.getItem(
-                    "nidsTotal"
-                ) || "0";
-
+                localStorage.getItem("nidsTotal") || "0";
 
             document.getElementById(
                 "normal-count"
             ).innerText =
-                localStorage.getItem(
-                    "nidsNormal"
-                ) || "0";
-
+                localStorage.getItem("nidsNormal") || "0";
 
             document.getElementById(
                 "attack-count"
             ).innerText =
-                localStorage.getItem(
-                    "nidsAttack"
-                ) || "0";
-
+                localStorage.getItem("nidsAttack") || "0";
 
             renderHistory();
         }
 
-
         function loadAttackDistribution() {
-
             const distributionList =
                 document.getElementById(
                     "attack-distribution-list"
                 );
 
-
-            const attackTypes =
-                JSON.parse(
-                    localStorage.getItem(
-                        "nidsAttackTypes"
-                    ) || "{}"
-                );
-
+            const attackTypes = JSON.parse(
+                localStorage.getItem(
+                    "nidsAttackTypes"
+                ) || "{}"
+            );
 
             const entries =
-                Object.entries(
-                    attackTypes
-                );
-
+                Object.entries(attackTypes);
 
             distributionList.innerHTML = "";
 
-
-            if (
-                entries.length === 0
-            ) {
-
+            if (entries.length === 0) {
                 distributionList.innerHTML =
                     '<p class="no-results">No attacks detected yet.</p>';
-
                 return;
             }
 
-
-            entries.sort(
-                function (a, b) {
-                    return b[1] - a[1];
-                }
-            );
-
+            entries.sort(function(a, b) {
+                return b[1] - a[1];
+            });
 
             const maxCount =
                 entries[0][1];
 
+            entries.forEach(function(entry) {
+                const attackType = entry[0];
+                const count = entry[1];
 
-            entries.forEach(
-                function (entry) {
+                const row =
+                    document.createElement("div");
 
-                    const attackType =
-                        entry[0];
+                row.className =
+                    "distribution-row";
 
+                const header =
+                    document.createElement("div");
 
-                    const count =
-                        entry[1];
+                header.className =
+                    "distribution-header";
 
+                const name =
+                    document.createElement("span");
 
-                    const row =
-                        document.createElement(
-                            "div"
-                        );
+                name.innerText =
+                    attackType;
 
+                const countText =
+                    document.createElement("span");
 
-                    row.className =
-                        "distribution-row";
+                countText.innerText =
+                    count + " detection(s)";
 
+                header.appendChild(name);
+                header.appendChild(countText);
 
-                    const header =
-                        document.createElement(
-                            "div"
-                        );
+                const barContainer =
+                    document.createElement("div");
 
+                barContainer.className =
+                    "distribution-bar-container";
 
-                    header.className =
-                        "distribution-header";
+                const bar =
+                    document.createElement("div");
 
+                bar.className =
+                    "distribution-bar";
 
-                    const name =
-                        document.createElement(
-                            "span"
-                        );
+                bar.style.width =
+                    (count / maxCount) * 100 + "%";
 
+                barContainer.appendChild(bar);
 
-                    name.innerText =
-                        attackType;
+                row.appendChild(header);
+                row.appendChild(barContainer);
 
-
-                    const countText =
-                        document.createElement(
-                            "span"
-                        );
-
-
-                    countText.innerText =
-                        count +
-                        " detection(s)";
-
-
-                    header.appendChild(
-                        name
-                    );
-
-
-                    header.appendChild(
-                        countText
-                    );
-
-
-                    const barContainer =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    barContainer.className =
-                        "distribution-bar-container";
-
-
-                    const bar =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    bar.className =
-                        "distribution-bar";
-
-
-                    bar.style.width =
-                        (
-                            count /
-                            maxCount
-                        ) *
-                        100 +
-                        "%";
-
-
-                    barContainer.appendChild(
-                        bar
-                    );
-
-
-                    row.appendChild(
-                        header
-                    );
-
-
-                    row.appendChild(
-                        barContainer
-                    );
-
-
-                    distributionList.appendChild(
-                        row
-                    );
-                }
-            );
+                distributionList.appendChild(row);
+            });
         }
 
-
         function updateDetectionOverview() {
+            const total = Number(
+                localStorage.getItem("nidsTotal") || 0
+            );
 
-            const total =
-                Number(
-                    localStorage.getItem(
-                        "nidsTotal"
-                    ) || 0
-                );
+            const normal = Number(
+                localStorage.getItem("nidsNormal") || 0
+            );
 
-
-            const normal =
-                Number(
-                    localStorage.getItem(
-                        "nidsNormal"
-                    ) || 0
-                );
-
-
-            const attacks =
-                Number(
-                    localStorage.getItem(
-                        "nidsAttack"
-                    ) || 0
-                );
-
+            const attacks = Number(
+                localStorage.getItem("nidsAttack") || 0
+            );
 
             const normalPercentage =
                 total > 0
-                    ? (
-                        normal /
-                        total
-                    ) * 100
+                    ? (normal / total) * 100
                     : 0;
-
 
             const attackPercentage =
                 total > 0
-                    ? (
-                        attacks /
-                        total
-                    ) * 100
+                    ? (attacks / total) * 100
                     : 0;
-
 
             document.getElementById(
                 "normal-percentage"
             ).innerText =
-                normalPercentage.toFixed(1) +
-                "%";
-
+                normalPercentage.toFixed(1) + "%";
 
             document.getElementById(
                 "attack-percentage"
             ).innerText =
-                attackPercentage.toFixed(1) +
-                "%";
-
+                attackPercentage.toFixed(1) + "%";
 
             document.getElementById(
                 "normal-percentage-bar"
             ).style.width =
-                normalPercentage +
-                "%";
-
+                normalPercentage + "%";
 
             document.getElementById(
                 "attack-percentage-bar"
             ).style.width =
-                attackPercentage +
-                "%";
+                attackPercentage + "%";
         }
 
-
         function clearHistory() {
-
-            localStorage.removeItem(
-                "nidsTotal"
-            );
-
-
-            localStorage.removeItem(
-                "nidsNormal"
-            );
-
-
-            localStorage.removeItem(
-                "nidsAttack"
-            );
-
-
-            localStorage.removeItem(
-                "nidsHistory"
-            );
-
-
-            localStorage.removeItem(
-                "nidsAttackTypes"
-            );
-
+            localStorage.removeItem("nidsTotal");
+            localStorage.removeItem("nidsNormal");
+            localStorage.removeItem("nidsAttack");
+            localStorage.removeItem("nidsHistory");
+            localStorage.removeItem("nidsAttackTypes");
 
             document.getElementById(
                 "history-search"
             ).value = "";
 
-
             document.getElementById(
                 "total-count"
-            ).innerText =
-                "0";
-
+            ).innerText = "0";
 
             document.getElementById(
                 "normal-count"
-            ).innerText =
-                "0";
-
+            ).innerText = "0";
 
             document.getElementById(
                 "attack-count"
-            ).innerText =
-                "0";
-
+            ).innerText = "0";
 
             renderHistory();
             loadAttackDistribution();
             updateDetectionOverview();
         }
 
-
         function exportHistory() {
+            const savedHistory = JSON.parse(
+                localStorage.getItem(
+                    "nidsHistory"
+                ) || "[]"
+            );
 
-            const savedHistory =
-                JSON.parse(
-                    localStorage.getItem(
-                        "nidsHistory"
-                    ) || "[]"
-                );
-
-
-            if (
-                savedHistory.length === 0
-            ) {
-
+            if (savedHistory.length === 0) {
                 alert(
                     "No prediction history available."
                 );
-
                 return;
             }
-
 
             const csvContent =
                 "Prediction History\n" +
                 savedHistory
-                    .map(
-                        function (item) {
-
-                            return (
-                                '"' +
-                                item.replace(
-                                    /"/g,
-                                    '""'
-                                ) +
-                                '"'
-                            );
-                        }
-                    )
+                    .map(function(item) {
+                        return (
+                            '"' +
+                            item.replace(
+                                /"/g,
+                                '""'
+                            ) +
+                            '"'
+                        );
+                    })
                     .join("\n");
-
 
             const blob =
                 new Blob(
@@ -1822,57 +1441,76 @@
                     }
                 );
 
-
             const url =
-                URL.createObjectURL(
-                    blob
-                );
-
+                URL.createObjectURL(blob);
 
             const link =
-                document.createElement(
-                    "a"
-                );
+                document.createElement("a");
 
-
-            link.href =
-                url;
-
-
+            link.href = url;
             link.download =
                 "nids_prediction_history.csv";
 
-
-            document.body.appendChild(
-                link
-            );
-
-
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
 
-
-            document.body.removeChild(
-                link
-            );
-
-
-            URL.revokeObjectURL(
-                url
-            );
+            URL.revokeObjectURL(url);
         }
 
-
-        window.addEventListener(
-            "load",
-            function () {
-
-                loadSavedData();
-                loadAttackDistribution();
-                updateDetectionOverview();
-
+        document.getElementById(
+            "protocol_type"
+        ).addEventListener(
+            "change",
+            function() {
+                attackSampleLoaded = false;
             }
         );
 
+        document.getElementById(
+            "service"
+        ).addEventListener(
+            "input",
+            function() {
+                attackSampleLoaded = false;
+            }
+        );
+
+        document.getElementById(
+            "flag"
+        ).addEventListener(
+            "input",
+            function() {
+                attackSampleLoaded = false;
+            }
+        );
+
+        document.getElementById(
+            "src_bytes"
+        ).addEventListener(
+            "input",
+            function() {
+                attackSampleLoaded = false;
+            }
+        );
+
+        document.getElementById(
+            "dst_bytes"
+        ).addEventListener(
+            "input",
+            function() {
+                attackSampleLoaded = false;
+            }
+        );
+
+        window.addEventListener(
+            "load",
+            function() {
+                loadSavedData();
+                loadAttackDistribution();
+                updateDetectionOverview();
+            }
+        );
     </script>
 
 </body>

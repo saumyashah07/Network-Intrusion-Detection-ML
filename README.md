@@ -49,9 +49,8 @@ The trained machine learning model is integrated with a Flask web application th
 ## System Workflow
 
 <p align="center">
-  <img src="assets/system-workflow.png" alt="System Workflow" width="900">
+  <img src="./assets/system-workflow.png" alt="NIDS System Workflow" width="900">
 </p>
-
 ---
 
 ## Application Architecture

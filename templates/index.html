@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>NIDS Prediction</title>
 
     <style>
@@ -224,14 +223,8 @@
         }
 
         #history-search {
-            display: block;
             width: 100%;
             max-width: 400px;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            background: #fff;
         }
 
         .history-list {
@@ -295,10 +288,6 @@
             font-size: 14px;
         }
 
-        .overview-item strong {
-            font-size: 14px;
-        }
-
         .overview-bar-container {
             width: 100%;
             height: 9px;
@@ -357,6 +346,37 @@
 
             .history-header {
                 align-items: flex-start;
+
+                .model-comparison {
+    margin-top: 30px;
+}
+
+.comparison-item {
+    margin-bottom: 18px;
+}
+
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.comparison-bar-container {
+    width: 100%;
+    height: 10px;
+    background: #e5e5e5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.comparison-bar {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 10px;
+}
             }
         }
     </style>
@@ -382,46 +402,56 @@
 
         <div class="input-group">
             <label for="protocol_type">Protocol Type:</label>
-
             <select id="protocol_type">
-    <option value="">Select Protocol</option>
-    <option value="tcp">TCP</option>
-    <option value="udp">UDP</option>
-    <option value="icmp">ICMP</option>
-</select>
-
-<input type="text" id="service" placeholder="Enter service">
-
-<input type="text" id="flag" placeholder="Enter flag">
-
-<input type="number" id="src_bytes" placeholder="Enter source bytes">
-
-<input type="number" id="dst_bytes" placeholder="Enter destination bytes">
+                <option value="">Select Protocol</option>
+                <option value="tcp">TCP</option>
+                <option value="udp">UDP</option>
+                <option value="icmp">ICMP</option>
+            </select>
         </div>
 
         <div class="input-group">
             <label for="service">Service:</label>
-            <input type="text" id="service" value="http">
+            <input
+                type="text"
+                id="service"
+                placeholder="Enter service"
+            >
         </div>
 
         <div class="input-group">
             <label for="flag">Flag:</label>
-            <input type="text" id="flag" value="SF">
+            <input
+                type="text"
+                id="flag"
+                placeholder="Enter flag"
+            >
         </div>
 
         <div class="input-group">
             <label for="src_bytes">Source Bytes:</label>
-            <input type="number" id="src_bytes" value="181">
+            <input
+                type="number"
+                id="src_bytes"
+                placeholder="Enter source bytes"
+            >
         </div>
 
         <div class="input-group">
             <label for="dst_bytes">Destination Bytes:</label>
-            <input type="number" id="dst_bytes" value="5450">
+            <input
+                type="number"
+                id="dst_bytes"
+                placeholder="Enter destination bytes"
+            >
         </div>
 
         <div class="button-row">
 
-            <button id="predict-button" onclick="makePrediction()">
+            <button
+                id="predict-button"
+                onclick="makePrediction()"
+            >
                 Predict Network Traffic
             </button>
 
@@ -455,28 +485,78 @@
 
     </div>
 
-    <div class="model-info">
+ <div class="model-info">
 
-        <h2>Model Information</h2>
+    <h2>Models Used</h2>
 
-        <div class="model-cards">
+    <div class="model-cards">
 
-            <div class="model-card">
-                <h3>Random Forest</h3>
-                <p>Primary classification model</p>
-            </div>
-
-            <div class="model-card">
-                <h3>Decision Tree</h3>
-                <p>Tree-based comparison model</p>
-            </div>
-
-            <div class="model-card">
-                <h3>KNN</h3>
-                <p>Distance-based comparison model</p>
-            </div>
-
+        <div class="model-card">
+            <h3>Random Forest</h3>
+            <p>Primary classification model</p>
         </div>
+
+        <div class="model-card">
+            <h3>Decision Tree</h3>
+            <p>Tree-based comparison model</p>
+        </div>
+
+        <div class="model-card">
+            <h3>KNN</h3>
+            <p>Distance-based comparison model</p>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="model-comparison">
+
+    <h2>Model Accuracy Comparison</h2>
+
+    <div class="comparison-item">
+        <div class="comparison-header">
+            <span>Random Forest</span>
+            <strong>99.84%</strong>
+        </div>
+
+        <div class="comparison-bar-container">
+            <div
+                class="comparison-bar"
+                style="width: 99.84%;"
+            ></div>
+        </div>
+    </div>
+
+    <div class="comparison-item">
+        <div class="comparison-header">
+            <span>Decision Tree</span>
+            <strong>99.77%</strong>
+        </div>
+
+        <div class="comparison-bar-container">
+            <div
+                class="comparison-bar"
+                style="width: 99.77%;"
+            ></div>
+        </div>
+    </div>
+
+    <div class="comparison-item">
+        <div class="comparison-header">
+            <span>KNN</span>
+            <strong>99.17%</strong>
+        </div>
+
+        <div class="comparison-bar-container">
+            <div
+                class="comparison-bar"
+                style="width: 99.17%;"
+            ></div>
+        </div>
+    </div>
+
+</div>
 
     </div>
 
@@ -565,7 +645,7 @@
             id="history-list"
             class="history-list"
         >
-            <p id="history-empty" class="no-results">
+            <p class="no-results">
                 No predictions yet.
             </p>
         </div>
@@ -578,7 +658,7 @@
 
         <div id="attack-distribution-list">
 
-            <p id="distribution-empty" class="no-results">
+            <p class="no-results">
                 No attacks detected yet.
             </p>
 
@@ -660,19 +740,13 @@
 
 
         function loadNormalSample() {
-    document.getElementById("protocol_type").value = "tcp";
-    document.getElementById("service").value = "http";
-    document.getElementById("flag").value = "SF";
-    document.getElementById("src_bytes").value = 181;
-    document.getElementById("dst_bytes").value = 5450;
 
-    const resultElement = document.getElementById("result");
-
-    resultElement.innerText =
-        "Normal sample loaded. Click Predict Network Traffic to analyze it.";
-
-    resultElement.className = "normal-result";
-}
+            document.getElementById("protocol_type").value = "tcp";
+            document.getElementById("service").value = "http";
+            document.getElementById("flag").value = "SF";
+            document.getElementById("src_bytes").value = 181;
+            document.getElementById("dst_bytes").value = 5450;
+        }
 
 
         async function makePrediction() {
@@ -683,6 +757,9 @@
             predictButton.disabled = true;
             predictButton.innerText = "Analyzing...";
 
+
+            const protocolValue =
+                document.getElementById("protocol_type").value;
 
             const serviceValue =
                 document.getElementById("service").value.trim();
@@ -701,10 +778,14 @@
                 );
 
 
-            if (!serviceValue || !flagValue) {
+            if (
+                !protocolValue ||
+                !serviceValue ||
+                !flagValue
+            ) {
 
                 alert(
-                    "Please enter both Service and Flag."
+                    "Please fill in Protocol Type, Service and Flag."
                 );
 
                 predictButton.disabled = false;
@@ -732,7 +813,10 @@
             }
 
 
-            if (srcBytes < 0 || dstBytes < 0) {
+            if (
+                srcBytes < 0 ||
+                dstBytes < 0
+            ) {
 
                 alert(
                     "Source Bytes and Destination Bytes cannot be negative."
@@ -751,17 +835,19 @@
                 duration: 0,
 
                 protocol_type:
-                    document.getElementById(
-                        "protocol_type"
-                    ).value,
+                    protocolValue,
 
-                service: serviceValue,
+                service:
+                    serviceValue,
 
-                flag: flagValue,
+                flag:
+                    flagValue,
 
-                src_bytes: srcBytes,
+                src_bytes:
+                    srcBytes,
 
-                dst_bytes: dstBytes,
+                dst_bytes:
+                    dstBytes,
 
                 land: 0,
                 wrong_fragment: 0,
@@ -813,10 +899,13 @@
                         {
                             method: "POST",
                             headers: {
-                                "Content-Type": "application/json"
+                                "Content-Type":
+                                    "application/json"
                             },
                             body:
-                                JSON.stringify(sampleData)
+                                JSON.stringify(
+                                    sampleData
+                                )
                         }
                     );
 
@@ -857,7 +946,9 @@
 
 
                 const resultElement =
-                    document.getElementById("result");
+                    document.getElementById(
+                        "result"
+                    );
 
 
                 const confidenceWrapper =
@@ -878,7 +969,9 @@
                     );
 
 
-                if (attackType === "normal") {
+                if (
+                    attackType === "normal"
+                ) {
 
                     resultElement.innerText =
                         "✓ Normal Traffic\n" +
@@ -910,8 +1003,10 @@
                 confidenceWrapper.style.display =
                     "flex";
 
+
                 confidenceBar.style.width =
                     confidence + "%";
+
 
                 confidenceText.innerText =
                     confidence + "%";
@@ -924,12 +1019,14 @@
                         ) || 0
                     );
 
+
                 let normal =
                     Number(
                         localStorage.getItem(
                             "nidsNormal"
                         ) || 0
                     );
+
 
                 let attacks =
                     Number(
@@ -942,7 +1039,9 @@
                 total++;
 
 
-                if (attackType === "normal") {
+                if (
+                    attackType === "normal"
+                ) {
                     normal++;
                 } else {
                     attacks++;
@@ -954,10 +1053,12 @@
                     total
                 );
 
+
                 localStorage.setItem(
                     "nidsNormal",
                     normal
                 );
+
 
                 localStorage.setItem(
                     "nidsAttack",
@@ -986,12 +1087,10 @@
 
                 const historyText =
                     attackType === "normal"
-
                         ? "✓ Normal Traffic | Confidence: " +
                           confidence +
                           "% | " +
                           time
-
                         : "⚠ " +
                           attackType +
                           " | Category: " +
@@ -1102,37 +1201,37 @@
 
             document.getElementById(
                 "protocol_type"
-            ).value = "tcp";
+            ).value = "";
 
 
             document.getElementById(
                 "service"
-            ).value = "http";
+            ).value = "";
 
 
             document.getElementById(
                 "flag"
-            ).value = "SF";
+            ).value = "";
 
 
             document.getElementById(
                 "src_bytes"
-            ).value = 181;
+            ).value = "";
 
 
             document.getElementById(
                 "dst_bytes"
-            ).value = 5450;
+            ).value = "";
 
 
-            const resultElement =
-                document.getElementById(
-                    "result"
-                );
+            document.getElementById(
+                "result"
+            ).innerText = "";
 
 
-            resultElement.innerText = "";
-            resultElement.className = "";
+            document.getElementById(
+                "result"
+            ).className = "";
 
 
             document.getElementById(
@@ -1175,7 +1274,7 @@
             ) {
 
                 historyList.innerHTML =
-                    '<p id="history-empty" class="no-results">No predictions yet.</p>';
+                    '<p class="no-results">No predictions yet.</p>';
 
                 return;
             }
@@ -1223,27 +1322,10 @@
                     .toLowerCase();
 
 
-            const historyList =
-                document.getElementById(
-                    "history-list"
-                );
-
-
             const historyItems =
-                historyList.querySelectorAll(
+                document.querySelectorAll(
                     ".history-item"
                 );
-
-
-            const oldMessage =
-                document.getElementById(
-                    "history-filter-empty"
-                );
-
-
-            if (oldMessage) {
-                oldMessage.remove();
-            }
 
 
             let visibleCount = 0;
@@ -1260,20 +1342,28 @@
                             );
 
 
+                    item.style.display =
+                        matches
+                            ? "block"
+                            : "none";
+
+
                     if (matches) {
-
-                        item.style.display =
-                            "block";
-
                         visibleCount++;
-
-                    } else {
-
-                        item.style.display =
-                            "none";
                     }
                 }
             );
+
+
+            const existingMessage =
+                document.getElementById(
+                    "history-filter-empty"
+                );
+
+
+            if (existingMessage) {
+                existingMessage.remove();
+            }
 
 
             if (
@@ -1299,40 +1389,12 @@
                     "No matching predictions found.";
 
 
-                historyList.appendChild(
+                document.getElementById(
+                    "history-list"
+                ).appendChild(
                     message
                 );
             }
-        }
-
-
-        function loadSavedData() {
-
-            document.getElementById(
-                "total-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsTotal"
-                ) || "0";
-
-
-            document.getElementById(
-                "normal-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsNormal"
-                ) || "0";
-
-
-            document.getElementById(
-                "attack-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsAttack"
-                ) || "0";
-
-
-            renderHistory();
         }
 
 
@@ -1596,11 +1658,6 @@
             ).value = "";
 
 
-            renderHistory();
-            loadAttackDistribution();
-            updateDetectionOverview();
-
-
             document.getElementById(
                 "total-count"
             ).innerText = "0";
@@ -1614,6 +1671,11 @@
             document.getElementById(
                 "attack-count"
             ).innerText = "0";
+
+
+            renderHistory();
+            loadAttackDistribution();
+            updateDetectionOverview();
         }
 
 
@@ -1644,7 +1706,6 @@
                 savedHistory
                     .map(
                         function (item) {
-
                             return (
                                 '"' +
                                 item.replace(
@@ -1655,9 +1716,7 @@
                             );
                         }
                     )
-                    .join(
-                        "\n"
-                    );
+                    .join("\n");
 
 
             const blob =
@@ -1714,12 +1773,41 @@
             function () {
 
                 loadSavedData();
-
                 loadAttackDistribution();
-
                 updateDetectionOverview();
+
             }
         );
+
+
+        function loadSavedData() {
+
+            document.getElementById(
+                "total-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsTotal"
+                ) || "0";
+
+
+            document.getElementById(
+                "normal-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsNormal"
+                ) || "0";
+
+
+            document.getElementById(
+                "attack-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsAttack"
+                ) || "0";
+
+
+            renderHistory();
+        }
 
     </script>
 

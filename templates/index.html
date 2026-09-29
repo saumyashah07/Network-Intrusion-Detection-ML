@@ -99,6 +99,7 @@
         }
 
         .model-info,
+        .model-comparison,
         .evaluation-summary,
         .prediction-history,
         .attack-distribution,
@@ -144,6 +145,33 @@
             font-size: 20px;
             font-weight: bold;
             color: #222;
+        }
+
+        .comparison-item {
+            margin-bottom: 18px;
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .comparison-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e5e5e5;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-bar {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 10px;
         }
 
         #result {
@@ -346,37 +374,6 @@
 
             .history-header {
                 align-items: flex-start;
-
-                .model-comparison {
-    margin-top: 30px;
-}
-
-.comparison-item {
-    margin-bottom: 18px;
-}
-
-.comparison-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 7px;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.comparison-bar-container {
-    width: 100%;
-    height: 10px;
-    background: #e5e5e5;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.comparison-bar {
-    height: 100%;
-    background: #4caf50;
-    border-radius: 10px;
-}
             }
         }
     </style>
@@ -402,6 +399,7 @@
 
         <div class="input-group">
             <label for="protocol_type">Protocol Type:</label>
+
             <select id="protocol_type">
                 <option value="">Select Protocol</option>
                 <option value="tcp">TCP</option>
@@ -412,6 +410,7 @@
 
         <div class="input-group">
             <label for="service">Service:</label>
+
             <input
                 type="text"
                 id="service"
@@ -421,6 +420,7 @@
 
         <div class="input-group">
             <label for="flag">Flag:</label>
+
             <input
                 type="text"
                 id="flag"
@@ -430,6 +430,7 @@
 
         <div class="input-group">
             <label for="src_bytes">Source Bytes:</label>
+
             <input
                 type="number"
                 id="src_bytes"
@@ -439,6 +440,7 @@
 
         <div class="input-group">
             <label for="dst_bytes">Destination Bytes:</label>
+
             <input
                 type="number"
                 id="dst_bytes"
@@ -485,78 +487,82 @@
 
     </div>
 
- <div class="model-info">
+    <div class="model-info">
 
-    <h2>Models Used</h2>
+        <h2>Models Used</h2>
 
-    <div class="model-cards">
+        <div class="model-cards">
 
-        <div class="model-card">
-            <h3>Random Forest</h3>
-            <p>Primary classification model</p>
-        </div>
+            <div class="model-card">
+                <h3>Random Forest</h3>
+                <p>Primary classification model</p>
+            </div>
 
-        <div class="model-card">
-            <h3>Decision Tree</h3>
-            <p>Tree-based comparison model</p>
-        </div>
+            <div class="model-card">
+                <h3>Decision Tree</h3>
+                <p>Tree-based comparison model</p>
+            </div>
 
-        <div class="model-card">
-            <h3>KNN</h3>
-            <p>Distance-based comparison model</p>
+            <div class="model-card">
+                <h3>KNN</h3>
+                <p>Distance-based comparison model</p>
+            </div>
+
         </div>
 
     </div>
 
-</div>
+    <div class="model-comparison">
 
-<div class="model-comparison">
+        <h2>Model Accuracy Comparison</h2>
 
-    <h2>Model Accuracy Comparison</h2>
+        <div class="comparison-item">
 
-    <div class="comparison-item">
-        <div class="comparison-header">
-            <span>Random Forest</span>
-            <strong>99.84%</strong>
+            <div class="comparison-header">
+                <span>Random Forest</span>
+                <strong>99.84%</strong>
+            </div>
+
+            <div class="comparison-bar-container">
+                <div
+                    class="comparison-bar"
+                    style="width: 99.84%;"
+                ></div>
+            </div>
+
         </div>
 
-        <div class="comparison-bar-container">
-            <div
-                class="comparison-bar"
-                style="width: 99.84%;"
-            ></div>
-        </div>
-    </div>
+        <div class="comparison-item">
 
-    <div class="comparison-item">
-        <div class="comparison-header">
-            <span>Decision Tree</span>
-            <strong>99.77%</strong>
-        </div>
+            <div class="comparison-header">
+                <span>Decision Tree</span>
+                <strong>99.77%</strong>
+            </div>
 
-        <div class="comparison-bar-container">
-            <div
-                class="comparison-bar"
-                style="width: 99.77%;"
-            ></div>
-        </div>
-    </div>
+            <div class="comparison-bar-container">
+                <div
+                    class="comparison-bar"
+                    style="width: 99.77%;"
+                ></div>
+            </div>
 
-    <div class="comparison-item">
-        <div class="comparison-header">
-            <span>KNN</span>
-            <strong>99.17%</strong>
         </div>
 
-        <div class="comparison-bar-container">
-            <div
-                class="comparison-bar"
-                style="width: 99.17%;"
-            ></div>
-        </div>
-    </div>
+        <div class="comparison-item">
 
-</div>
+            <div class="comparison-header">
+                <span>KNN</span>
+                <strong>99.17%</strong>
+            </div>
+
+            <div class="comparison-bar-container">
+                <div
+                    class="comparison-bar"
+                    style="width: 99.17%;"
+                ></div>
+            </div>
+
+        </div>
 
     </div>
 
@@ -752,29 +758,46 @@
         async function makePrediction() {
 
             const predictButton =
-                document.getElementById("predict-button");
+                document.getElementById(
+                    "predict-button"
+                );
+
 
             predictButton.disabled = true;
             predictButton.innerText = "Analyzing...";
 
 
             const protocolValue =
-                document.getElementById("protocol_type").value;
+                document.getElementById(
+                    "protocol_type"
+                ).value;
+
 
             const serviceValue =
-                document.getElementById("service").value.trim();
+                document.getElementById(
+                    "service"
+                ).value.trim();
+
 
             const flagValue =
-                document.getElementById("flag").value.trim();
+                document.getElementById(
+                    "flag"
+                ).value.trim();
+
 
             const srcBytes =
                 Number(
-                    document.getElementById("src_bytes").value
+                    document.getElementById(
+                        "src_bytes"
+                    ).value
                 );
+
 
             const dstBytes =
                 Number(
-                    document.getElementById("dst_bytes").value
+                    document.getElementById(
+                        "dst_bytes"
+                    ).value
                 );
 
 
@@ -921,6 +944,13 @@
                     await response.json();
 
 
+                if (result.error) {
+                    throw new Error(
+                        result.error
+                    );
+                }
+
+
                 const attackType =
                     String(
                         result.prediction || ""
@@ -941,7 +971,9 @@
 
                 const category =
                     result.category ||
-                    attackCategoryMap[attackType] ||
+                    attackCategoryMap[
+                        attackType
+                    ] ||
                     "Other";
 
 
@@ -1068,17 +1100,20 @@
 
                 document.getElementById(
                     "total-count"
-                ).innerText = total;
+                ).innerText =
+                    total;
 
 
                 document.getElementById(
                     "normal-count"
-                ).innerText = normal;
+                ).innerText =
+                    normal;
 
 
                 document.getElementById(
                     "attack-count"
-                ).innerText = attacks;
+                ).innerText =
+                    attacks;
 
 
                 const time =
@@ -1161,7 +1196,6 @@
                 loadAttackDistribution();
                 updateDetectionOverview();
 
-
             } catch (error) {
 
                 const resultElement =
@@ -1172,7 +1206,7 @@
 
                 resultElement.innerText =
                     "Unable to generate prediction.\n" +
-                    "Please make sure the Flask server is running.";
+                    error.message;
 
 
                 resultElement.className =
@@ -1181,11 +1215,11 @@
 
                 document.getElementById(
                     "confidence-wrapper"
-                ).style.display = "none";
+                ).style.display =
+                    "none";
 
 
                 console.error(error);
-
 
             } finally {
 
@@ -1236,17 +1270,20 @@
 
             document.getElementById(
                 "confidence-wrapper"
-            ).style.display = "none";
+            ).style.display =
+                "none";
 
 
             document.getElementById(
                 "confidence-bar"
-            ).style.width = "0%";
+            ).style.width =
+                "0%";
 
 
             document.getElementById(
                 "confidence-text"
-            ).innerText = "0%";
+            ).innerText =
+                "0%";
         }
 
 
@@ -1342,27 +1379,30 @@
                             );
 
 
-                    item.style.display =
-                        matches
-                            ? "block"
-                            : "none";
-
-
                     if (matches) {
+
+                        item.style.display =
+                            "block";
+
                         visibleCount++;
+
+                    } else {
+
+                        item.style.display =
+                            "none";
                     }
                 }
             );
 
 
-            const existingMessage =
+            const oldMessage =
                 document.getElementById(
                     "history-filter-empty"
                 );
 
 
-            if (existingMessage) {
-                existingMessage.remove();
+            if (oldMessage) {
+                oldMessage.remove();
             }
 
 
@@ -1395,6 +1435,36 @@
                     message
                 );
             }
+        }
+
+
+        function loadSavedData() {
+
+            document.getElementById(
+                "total-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsTotal"
+                ) || "0";
+
+
+            document.getElementById(
+                "normal-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsNormal"
+                ) || "0";
+
+
+            document.getElementById(
+                "attack-count"
+            ).innerText =
+                localStorage.getItem(
+                    "nidsAttack"
+                ) || "0";
+
+
+            renderHistory();
         }
 
 
@@ -1587,13 +1657,19 @@
 
             const normalPercentage =
                 total > 0
-                    ? (normal / total) * 100
+                    ? (
+                        normal /
+                        total
+                    ) * 100
                     : 0;
 
 
             const attackPercentage =
                 total > 0
-                    ? (attacks / total) * 100
+                    ? (
+                        attacks /
+                        total
+                    ) * 100
                     : 0;
 
 
@@ -1660,17 +1736,20 @@
 
             document.getElementById(
                 "total-count"
-            ).innerText = "0";
+            ).innerText =
+                "0";
 
 
             document.getElementById(
                 "normal-count"
-            ).innerText = "0";
+            ).innerText =
+                "0";
 
 
             document.getElementById(
                 "attack-count"
-            ).innerText = "0";
+            ).innerText =
+                "0";
 
 
             renderHistory();
@@ -1706,6 +1785,7 @@
                 savedHistory
                     .map(
                         function (item) {
+
                             return (
                                 '"' +
                                 item.replace(
@@ -1778,36 +1858,6 @@
 
             }
         );
-
-
-        function loadSavedData() {
-
-            document.getElementById(
-                "total-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsTotal"
-                ) || "0";
-
-
-            document.getElementById(
-                "normal-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsNormal"
-                ) || "0";
-
-
-            document.getElementById(
-                "attack-count"
-            ).innerText =
-                localStorage.getItem(
-                    "nidsAttack"
-                ) || "0";
-
-
-            renderHistory();
-        }
 
     </script>
 

@@ -5,378 +5,392 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NIDS Prediction</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+    * {
+        box-sizing: border-box;
+    }
 
+    body {
+        font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 35px 25px;
+        background: #fafafa;
+        color: #222;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    span,
+    label,
+    input,
+    select,
+    button {
+        font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+    }
+
+    h1 {
+        margin-bottom: 8px;
+    }
+
+    h2 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+    }
+
+    .subtitle {
+        color: #666;
+        font-size: 16px;
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+
+    .project-status {
+        font-size: 13px;
+        color: #888;
+        margin-bottom: 25px;
+    }
+
+    .input-section {
+        margin-top: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 16px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+    input,
+    select {
+        width: 100%;
+        max-width: 500px;
+        padding: 11px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    button {
+        padding: 11px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        background: #222;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .secondary-button {
+        background: #e6e6e6;
+        color: #222;
+    }
+
+    .model-info,
+    .model-comparison,
+    .evaluation-summary,
+    .prediction-history,
+    .attack-distribution,
+    .detection-overview {
+        margin-top: 30px;
+    }
+
+    .model-cards,
+    .evaluation-cards,
+    .prediction-stats {
+        display: flex;
+        gap: 15px;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .model-card,
+    .evaluation-card,
+    .stat-card {
+        flex: 1;
+        min-width: 180px;
+        padding: 18px;
+        border-radius: 12px;
+        background: #f4f4f4;
+        text-align: center;
+    }
+
+    .model-card h3,
+    .evaluation-card h3,
+    .stat-card h3 {
+        margin: 0 0 8px;
+    }
+
+    .model-card p,
+    .evaluation-card p,
+    .stat-card p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .evaluation-card p {
+        font-size: 20px;
+        font-weight: bold;
+        color: #222;
+    }
+
+    .comparison-item {
+        margin-bottom: 18px;
+    }
+
+    .comparison-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 7px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .comparison-bar-container {
+        width: 100%;
+        height: 10px;
+        background: #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .comparison-bar {
+        height: 100%;
+        background: #4caf50;
+        border-radius: 10px;
+    }
+
+    #result {
+        display: none;
+        padding: 15px;
+        margin-top: 25px;
+        border-radius: 10px;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.35;
+        white-space: pre-line;
+    }
+
+    .normal-result {
+        display: block !important;
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .attack-result {
+        display: block !important;
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    #confidence-wrapper {
+        display: none;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        margin: 10px 0 20px;
+    }
+
+    #confidence-bar-container {
+        width: 220px;
+        height: 10px;
+        background: #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #confidence-bar {
+        width: 0%;
+        height: 100%;
+        background: #4caf50;
+        border-radius: 10px;
+        transition: width 0.4s ease;
+    }
+
+    #confidence-text {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .history-header h2 {
+        margin: 0;
+    }
+
+    .history-header .button-row {
+        margin-top: 0;
+    }
+
+    .prediction-stats {
+        margin-top: 15px;
+    }
+
+    .history-search-wrapper {
+        width: 100%;
+        margin-top: 18px;
+        margin-bottom: 12px;
+    }
+
+    #history-search {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .history-item {
+        padding: 11px 14px;
+        border-radius: 8px;
+        background: #f4f4f4;
+        font-size: 14px;
+    }
+
+    .no-results {
+        color: #777;
+        font-size: 14px;
+    }
+
+    .distribution-row {
+        margin-bottom: 16px;
+    }
+
+    .distribution-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .distribution-bar-container {
+        width: 100%;
+        height: 9px;
+        background: #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .distribution-bar {
+        height: 100%;
+        background: #4caf50;
+        border-radius: 10px;
+        transition: width 0.4s ease;
+    }
+
+    .overview-card {
+        padding: 20px;
+        border-radius: 12px;
+        background: #f4f4f4;
+    }
+
+    .overview-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 7px;
+        font-size: 14px;
+    }
+
+    .overview-bar-container {
+        width: 100%;
+        height: 9px;
+        margin-bottom: 18px;
+        background: #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .overview-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 10px;
+        transition: width 0.4s ease;
+    }
+
+    .normal-bar {
+        background: #4caf50;
+    }
+
+    .attack-bar {
+        background: #c62828;
+    }
+
+    .disclaimer {
+        margin-top: 35px;
+        padding: 12px;
+        text-align: center;
+        font-size: 12px;
+        color: #777;
+        line-height: 1.5;
+    }
+
+    footer {
+        margin-top: 20px;
+        padding: 15px;
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+    }
+
+    @media (max-width: 650px) {
         body {
-            font-family: Arial, sans-serif;
-            max-width: 950px;
-            margin: 0 auto;
-            padding: 35px 25px;
-            background: #fafafa;
-            color: #222;
-        }
-
-        h1 {
-            margin-bottom: 8px;
-        }
-
-        h2 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .project-status {
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 25px;
-        }
-
-        .input-section {
-            margin-top: 25px;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        input,
-        select {
-            width: 100%;
-            max-width: 500px;
-            padding: 11px 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        button {
-            padding: 11px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            background: #222;
-            color: white;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .secondary-button {
-            background: #e6e6e6;
-            color: #222;
-        }
-
-        .model-info,
-        .model-comparison,
-        .evaluation-summary,
-        .prediction-history,
-        .attack-distribution,
-        .detection-overview {
-            margin-top: 30px;
-        }
-
-        .model-cards,
-        .evaluation-cards,
-        .prediction-stats {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            flex-wrap: wrap;
+            padding: 25px 15px;
         }
 
         .model-card,
         .evaluation-card,
         .stat-card {
-            flex: 1;
-            min-width: 180px;
-            padding: 18px;
-            border-radius: 12px;
-            background: #f4f4f4;
-            text-align: center;
-        }
-
-        .model-card h3,
-        .evaluation-card h3,
-        .stat-card h3 {
-            margin: 0 0 8px;
-        }
-
-        .model-card p,
-        .evaluation-card p,
-        .stat-card p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .evaluation-card p {
-            font-size: 20px;
-            font-weight: bold;
-            color: #222;
-        }
-
-        .comparison-item {
-            margin-bottom: 18px;
-        }
-
-        .comparison-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 7px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .comparison-bar-container {
-            width: 100%;
-            height: 10px;
-            background: #e5e5e5;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .comparison-bar {
-            height: 100%;
-            background: #4caf50;
-            border-radius: 10px;
-        }
-
-        #result {
-            display: none;
-            padding: 15px;
-            margin-top: 25px;
-            border-radius: 10px;
-            font-weight: bold;
-            white-space: pre-line;
-        }
-
-        .normal-result {
-            display: block !important;
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .attack-result {
-            display: block !important;
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        #confidence-wrapper {
-            display: none;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-            margin: 10px 0 20px;
+            min-width: 100%;
         }
 
         #confidence-bar-container {
-            width: 220px;
-            height: 10px;
-            background: #e5e5e5;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        #confidence-bar {
-            width: 0%;
-            height: 100%;
-            background: #4caf50;
-            border-radius: 10px;
-            transition: width 0.4s ease;
-        }
-
-        #confidence-text {
-            font-size: 13px;
-            font-weight: 600;
+            width: 170px;
         }
 
         .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            align-items: flex-start;
         }
-
-        .history-header h2 {
-            margin: 0;
-        }
-
-        .history-header .button-row {
-            margin-top: 0;
-        }
-
-        .prediction-stats {
-            margin-top: 15px;
-        }
-
-        .history-search-wrapper {
-            width: 100%;
-            margin-top: 18px;
-            margin-bottom: 12px;
-        }
-
-        #history-search {
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .history-item {
-            padding: 11px 14px;
-            border-radius: 8px;
-            background: #f4f4f4;
-            font-size: 14px;
-        }
-
-        .no-results {
-            color: #777;
-            font-size: 14px;
-        }
-
-        .distribution-row {
-            margin-bottom: 16px;
-        }
-
-        .distribution-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .distribution-bar-container {
-            width: 100%;
-            height: 9px;
-            background: #e5e5e5;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .distribution-bar {
-            height: 100%;
-            background: #4caf50;
-            border-radius: 10px;
-            transition: width 0.4s ease;
-        }
-
-        .overview-card {
-            padding: 20px;
-            border-radius: 12px;
-            background: #f4f4f4;
-        }
-
-        .overview-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 7px;
-            font-size: 14px;
-        }
-
-        .overview-bar-container {
-            width: 100%;
-            height: 9px;
-            margin-bottom: 18px;
-            background: #e5e5e5;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .overview-bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 10px;
-            transition: width 0.4s ease;
-        }
-
-        .normal-bar {
-            background: #4caf50;
-        }
-
-        .attack-bar {
-            background: #c62828;
-        }
-
-        .disclaimer {
-            margin-top: 35px;
-            padding: 12px;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            line-height: 1.5;
-        }
-
-        footer {
-            margin-top: 20px;
-            padding: 15px;
-            text-align: center;
-            font-size: 13px;
-            color: #888;
-        }
-
-        @media (max-width: 650px) {
-            body {
-                padding: 25px 15px;
-            }
-
-            .model-card,
-            .evaluation-card,
-            .stat-card {
-                min-width: 100%;
-            }
-
-            #confidence-bar-container {
-                width: 170px;
-            }
-
-            .history-header {
-                align-items: flex-start;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>
